@@ -1,0 +1,180 @@
+.order-details-page h1 {
+  color: #F26B0A !important;
+  text-align: center !important;
+  margin: 30px 0 !important;
+  font-weight: 700 !important;
+  font-size: 3rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 3px !important;
+  text-shadow: 0 0 15px rgba(242, 107, 10, 0.5) !important;
+  animation: glow 2s ease-in-out infinite alternate !important;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px rgba(242, 107, 10, 0.3);
+  }
+  to {
+    text-shadow: 0 0 20px rgba(242, 107, 10, 0.8);
+  }
+}
+
+.order-details-container {
+  width: 90% !important;
+  max-width: 900px !important;
+  margin: 20px auto 60px !important;
+  background: rgba(216, 204, 204, 0.05) !important;
+  padding: 30px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  border: 2px solid #F26B0A !important;
+  backdrop-filter: blur(10px) !important;
+  animation: slideIn 0.8s ease-out !important;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.order-details-container h3 {
+  color: #F26B0A !important;
+  font-weight: 600 !important;
+  margin-bottom: 20px !important;
+  font-size: 1.8rem !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+}
+
+.order-details-container .items-list {
+  margin-top: 20px !important;
+  display: block !important; /* علشان الكاردات تتراص رأسياً */
+}
+
+.order-details-container .item {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important; /* علشان الكارد ياخد العرض الكامل */
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 15px !important;
+  padding: 15px !important;
+  margin-bottom: 15px !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.order-details-container .item:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 20px rgba(242, 107, 10, 0.3) !important;
+}
+
+.order-details-container .item img {
+  width: 120px !important;
+  height: 120px !important;
+  object-fit: cover !important;
+  border-radius: 10px !important;
+  margin-right: 20px !important;
+  border: 2px solid #F26B0A !important;
+}
+
+.order-details-container .item-info {
+  flex: 1 !important;
+  overflow-wrap: break-word !important; /* علشان النص ما يتعداش حدود الكارد */
+}
+
+.order-details-container .item-info p {
+  margin: 5px 0 !important;
+  color: #000000 !important;
+  font-size: 1rem !important;
+}
+
+.order-details-container .item-info p strong {
+  color: #F26B0A !important;
+}
+
+.order-details-container .order-actions {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 20px !important;
+  margin-top: 30px !important;
+}
+
+.order-details-container .btn {
+  background: linear-gradient(90deg, #F26B0A, #ff5e62) !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 30px !important;
+  border-radius: 50px !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.order-details-container .btn::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+  transition: 0.5s !important;
+}
+
+.order-details-container .btn:hover::before {
+  left: 100% !important;
+}
+
+.order-details-container .btn:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 0 20px rgba(242, 107, 10, 0.5) !important;
+}
+
+.order-details-container .btn.delete {
+  background: linear-gradient(90deg, #ff5e62, #F26B0A) !important;
+}
+
+.order-details-container .no-items {
+  text-align: center !important;
+  color: #999 !important;
+  font-size: 1.2rem !important;
+  margin-top: 20px !important;
+}
+
+@media (max-width: 768px) {
+  .order-details-page h1 {
+    font-size: 2rem !important;
+  }
+
+  .order-details-container {
+    padding: 20px !important;
+    width: 95% !important;
+  }
+
+  .order-details-container .item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .order-details-container .item img {
+    margin-right: 0 !important;
+    margin-bottom: 15px !important;
+  }
+
+  .order-details-container .order-actions {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .order-details-container .btn {
+    width: 100% !important;
+  }
+}

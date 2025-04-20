@@ -1,0 +1,189 @@
+/* Main Content */
+.main-content {
+  flex: 1 0 auto;
+}
+
+/* Footer Styles */
+.site-footer {
+  background: linear-gradient(90deg, #1a1a1a, #333);
+  color: #fff;
+  padding: 60px 0 20px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.site-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(242, 107, 10, 0.1) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.site-footer .container {
+  position: relative;
+  z-index: 1;
+}
+
+.footer-logo-img {
+  width: 120px;
+  height: auto;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease;
+}
+
+.footer-logo-img:hover {
+  transform: scale(1.1);
+}
+
+.footer-logo p {
+  font-size: 0.95rem;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 15px;
+}
+
+.social-icon {
+  color: #fff;
+  font-size: 1.5rem;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.social-icon:hover {
+  color: #F26B0A;
+  transform: translateY(-3px);
+}
+
+.site-footer h5 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #F26B0A;
+  margin-bottom: 20px;
+}
+
+.site-footer ul {
+  padding: 0;
+}
+
+.site-footer ul li {
+  margin-bottom: 10px;
+}
+
+.site-footer ul li a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+.site-footer ul li a:hover {
+  color: #ff5e62;
+}
+
+.site-footer h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #F26B0A;
+  margin-bottom: 15px;
+}
+
+.site-footer .input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* مسافة بين الـ input والـ button */
+}
+
+.site-footer input {
+  background: #fff;
+  border: 2px solid #F26B0A;
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  color: #333;
+  flex-grow: 1; /* الـ input ياخد المساحة المتبقية */
+  width: auto; /* شيلنا width: 100% علشان ما ياخدش العرض كامل */
+  transition: border-color 0.3s ease;
+}
+
+.site-footer input:focus {
+  border-color: #ff5e62;
+  outline: none;
+  box-shadow: 0 0 5px rgba(242, 107, 10, 0.3);
+}
+
+.site-footer .btn.submit {
+  background: linear-gradient(90deg, #F26B0A, #ff5e62);
+  border: none;
+  border-radius: 25px;
+  padding: 12px 20px; /* نفس الـ padding بتاع الـ input علشان يكونوا متساويين في الارتفاع */
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  flex-shrink: 0; /* الـ button ما يتقلصش */
+}
+
+.site-footer .btn.submit:hover {
+  transform: scale(1.05);
+}
+
+.site-footer .btn.submit i {
+  font-size: 1rem;
+}
+
+.site-footer p {
+  font-size: 0.95rem;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(242, 107, 10, 0.3);
+  padding-top: 20px;
+  margin-top: 40px;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .site-footer {
+    padding: 40px 0 20px;
+  }
+
+  .site-footer h5, .site-footer h4 {
+    font-size: 1.1rem;
+  }
+
+  .footer-logo-img {
+    width: 100px;
+  }
+
+  .footer-logo p {
+    font-size: 0.9rem;
+  }
+
+  .social-icon {
+    font-size: 1.3rem;
+  }
+
+  .site-footer input {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+
+  .site-footer .btn.submit {
+    padding: 10px 15px;
+  }
+
+  .footer-bottom {
+    font-size: 0.85rem;
+  }
+}

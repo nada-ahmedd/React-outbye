@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex; /* إضافة Flexbox */
+  flex-direction: column; /* ترتيب العناصر عمودياً */
+}
+
+main { /* استهدف الـ main content (هنفترض إنه بيحتوي على الـ main-content) */
+  flex: 1 0 auto; /* خلي المحتوى الرئيسي ياخد المساحة المتبقية */
+}
+
+@media (max-width: 991px) {
+  body {
+    padding-top: 0px;
+  }
+}

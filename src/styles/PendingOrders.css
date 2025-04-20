@@ -1,0 +1,149 @@
+
+
+h1 {
+  color: #F26B0A;
+  text-align: center;
+  margin: 30px 0;
+  font-weight: 700;
+  font-size: 3rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 2px 10px rgba(242, 107, 10, 0.3);
+  animation: bounceIn 1s ease-out;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.orders-container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 20px auto 60px;
+  background: rgba(216, 204, 204, 0.05);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(242, 107, 10, 0.1);
+  border: 2px solid #F26B0A;
+  animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.order-card {
+  background: #f5edee;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #ffe0b2;
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(242, 107, 10, 0.2);
+}
+
+.order-info {
+  flex: 1;
+}
+
+.order-info p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 1rem;
+}
+
+.order-info p strong {
+  color: #F26B0A;
+}
+
+.order-actions .btn {
+  background: linear-gradient(90deg, #F26B0A, #ff5e62);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.order-actions .btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.order-actions .btn:hover::before {
+  left: 100%;
+}
+
+.order-actions .btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(242, 107, 10, 0.3);
+}
+
+.no-orders {
+  text-align: center;
+  color: #888;
+  font-size: 1.3rem;
+  margin: 40px 0;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .orders-container {
+    padding: 20px;
+    width: 95%;
+  }
+
+  .order-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-actions {
+    margin-top: 15px;
+    width: 100%;
+  }
+
+  .order-actions .btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,112 @@
+.verify-code-container {
+  position: relative;
+  width: 100%;
+  padding: 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.verify-code-container h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+.verify-code-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.verify-code-field {
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  font-size: 1.8rem;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  background-color: #fff;
+}
+
+.verify-code-field:focus {
+  border-color: #f06a0a;
+  box-shadow: 0 0 5px rgba(240, 106, 10, 0.3);
+}
+
+.verify-code-container button[type='submit'] {
+  background-color: #f06a0a;
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.verify-code-container button[type='submit']:hover {
+  background-color: #d95c00;
+}
+
+.verify-code-container p {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+#resendCodeLink {
+  color: #f06a0a;
+  text-decoration: none;
+  font-weight: bold;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+#resendCodeLink.enabled {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+#resendCodeLink:hover {
+  text-decoration: underline;
+}
+
+.verify-code-container .timer {
+  color: #f06a0a;
+  font-size: 1.1rem;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.verify-code-container .error-message {
+  color: red;
+  font-size: 1rem;
+  margin-top: 15px;
+}
+
+.back-btn {
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  padding: 12px 40px;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.back-btn:hover {
+  background-color: #bbb;
+}

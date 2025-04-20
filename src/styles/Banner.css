@@ -1,0 +1,100 @@
+.banner {
+  position: relative;
+  height: 100vh; /* الارتفاع كامل الشاشة */
+  width: 100%;
+  top: 0; /* إزالة الـ top عشان يبقى ملاصق للـ Navbar */
+}
+
+.carousel {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.carousel-item.active {
+  opacity: 1;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.dots {
+  position: absolute;
+  bottom: 16px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dot.active {
+  background-color: #F26B0A;
+}
+
+.banner-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 4vw;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-style: italic;
+  z-index: 2;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.banner-text span {
+  color: #F26B0A;
+}
+
+@media (max-width: 768px) {
+  .banner-text {
+    font-size: 7vw;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .banner {
+    height: 100vh;
+  }
+}

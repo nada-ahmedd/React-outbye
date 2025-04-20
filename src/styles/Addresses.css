@@ -1,0 +1,246 @@
+
+
+h1 {
+  color: #F26B0A;
+  text-align: center;
+  margin: 20px 0;
+  font-weight: 700;
+  font-size: 2.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 30px;
+  padding: 20px;
+  justify-content: center;
+}
+
+.address-form-container {
+  flex: 1;
+  max-width: 450px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(242, 107, 10, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.address-form-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(242, 107, 10, 0.25);
+}
+
+.address-form h3 {
+  color: #F26B0A;
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.form-group i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #F26B0A;
+  font-size: 1.2rem;
+}
+
+.address-form input {
+  width: 100%;
+  padding: 12px 15px 12px 45px;
+  border: 2px solid #f0f0f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: #f9f9f9;
+}
+
+.address-form input:focus {
+  outline: none;
+  border-color: #F26B0A;
+  box-shadow: 0 0 8px rgba(242, 107, 10, 0.3);
+}
+
+.form-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.address-form button {
+  background: linear-gradient(90deg, #F26B0A, #ff5e62);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.address-form button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(242, 107, 10, 0.4);
+}
+
+.address-form button:active {
+  transform: scale(0.95);
+}
+
+.address-form button.clear-btn {
+  background: linear-gradient(90deg, #6c757d, #adb5bd);
+}
+
+.address-form button.clear-btn:hover {
+  box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+}
+
+.address-list-container {
+  flex: 1;
+  max-width: 550px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(242, 107, 10, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.address-list-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(242, 107, 10, 0.25);
+}
+
+.address-list-container h3 {
+  color: #F26B0A;
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.address-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #fff9f0;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.address-item:hover {
+  background-color: #fff3e6;
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(242, 107, 10, 0.2);
+}
+
+.address-item span {
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.address-item span i {
+  margin-right: 10px;
+  color: #F26B0A;
+  font-size: 1.3rem;
+}
+
+.address-item .actions {
+  display: flex;
+  gap: 10px;
+}
+
+.address-item button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  transition: color 0.3s ease, transform 0.1s ease;
+}
+
+.address-item button.edit-btn {
+  color: #F26B0A;
+}
+
+.address-item button.delete-btn {
+  color: #e74c3c;
+}
+
+.address-item button:hover {
+  transform: scale(1.2);
+}
+
+.address-item button.edit-btn:hover {
+  color: #d35400;
+}
+
+.address-item button.delete-btn:hover {
+  color: #c0392b;
+}
+
+.checkout-button {
+  display: block;
+  width: 100%;
+  background: linear-gradient(90deg, #28a745, #34ce57);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 20px;
+}
+
+.checkout-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+.site-footer {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .address-form-container,
+  .address-list-container {
+    max-width: 100%;
+  }
+}
