@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom'; // أضيفي Link هنا
 import Swal from 'sweetalert2';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -128,7 +128,7 @@ const SignIn = () => {
         let modifiedAuthUrl = data.auth_url.includes('?')
           ? `${data.auth_url}&format=html`
           : `${data.auth_url}?format=html`;
-        const popup = window.open(modifiedAuthUrl, 'googleSignInPopup', 'width=600,height=600');
+        const popup =窓.open(modifiedAuthUrl, 'googleSignInPopup', 'width=600,height=600');
         if (!popup) {
           Swal.fire({
             icon: 'error',
@@ -233,9 +233,9 @@ const SignIn = () => {
               <div className="signup-link" style={{ marginTop: '15px' }}>
                 <p>
                   Don't have an account?{' '}
-                  <a href="/signup" className="text-log">
+                  <Link to="/signup" className="text-log"> {/* استبدلي <a> بـ <Link> */}
                     Sign Up
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>

@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/services/:id",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/items/:id",
+      "destination": "/index.html"
+    }
+  ]
+}

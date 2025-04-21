@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom'; // أضيفي useLocation
 import Swal from 'sweetalert2';
 import '../styles/Items.css';
 
 const Items = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation(); // جيبي الـ state من الـ navigation
   const [serviceDetails, setServiceDetails] = useState(null);
   const [items, setItems] = useState([]);
   const [itemsLoading, setItemsLoading] = useState(true);
   const [favorites, setFavorites] = useState({});
+
+  // تحققي إذا كان المستخدم جاي من Service
+  if (!location.state?.fromService) {
+    navigate('/'); // لو مش جاي من Service، رجعيه للـ Home
+    return null;
+  }
 
   const fetchWithToken = async (url, options = {}) => {
     const token = localStorage.getItem('token');
@@ -44,6 +51,7 @@ const Items = () => {
     if (!id) {
       console.error("❌ No service ID found!");
       setItemsLoading(false);
+      navigate('/'); // رجعي المستخدم للـ Home لو الـ id مش موجود
       return;
     }
 

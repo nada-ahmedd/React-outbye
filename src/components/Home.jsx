@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavorite, fetchFavorites } from '../store/favoritesSlice';
-import { fetchCart, addToCart } from '../store/cartSlice'; // استيراد الـ cart actions
+import { fetchCart, addToCart } from '../store/cartSlice';
 import Swal from 'sweetalert2';
 import Glide from '@glidejs/glide';
 import '@glidejs/glide/dist/css/glide.core.min.css';
@@ -14,7 +14,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const favoritesState = useSelector((state) => state.favorites || { items: [], status: 'idle', error: null });
   const { items: favorites, status: favoritesStatus, error: favoritesError } = favoritesState;
-  const { userId } = useSelector((state) => state.auth || {}); // جلب الـ userId من الـ auth state
+  const { userId } = useSelector((state) => state.auth || {});
   const { status: cartStatus, error: cartError } = useSelector((state) => state.cart || { status: 'idle', error: null });
   const [categories, setCategories] = useState([]);
   const [discountItems, setDiscountItems] = useState([]);
@@ -124,7 +124,6 @@ const Home = () => {
         text: "Item added to cart successfully.",
         confirmButtonText: "OK"
       });
-      // بعد الإضافة، نعيد تحميل الـ Cart عشان الـ state يتجدد
       dispatch(fetchCart(userId));
     } catch (error) {
       Swal.fire({
@@ -176,7 +175,7 @@ const Home = () => {
 
     if (userId) {
       dispatch(fetchFavorites(userId));
-      dispatch(fetchCart(userId)); // تحميل الـ Cart للمستخدم المسجّل دخول
+      dispatch(fetchCart(userId));
     }
 
     let discountObserver;
@@ -328,7 +327,7 @@ const Home = () => {
             ) : categories.length > 0 ? (
               categories.map(category => (
                 <div className="category-item" key={category.categories_id}>
-                  <a href={`/services/${category.categories_id}`} className="category-link">
+                  <Link to={`/services/${category.categories_id}`} className="category-link">
                     <div className="category-box">
                       <img
                         src={category.categories_image || 'public/images/out bye.png'}
@@ -340,7 +339,7 @@ const Home = () => {
                         <p className="category-name">{category.categories_name || 'Unnamed Category'}</p>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               ))
             ) : (

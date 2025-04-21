@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import '../styles/Services.css';
 
 const Services = () => {
-  const { id } = useParams(); // جلب الـ category_id من الـ URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [categoryName, setCategoryName] = useState('');
   const [services, setServices] = useState([]);
@@ -43,6 +43,7 @@ const Services = () => {
         title: 'Invalid Category',
         text: 'Invalid category ID.',
       });
+      navigate('/'); // رجعي المستخدم للـ Home لو الـ id مش صح
       return;
     }
 
@@ -82,7 +83,7 @@ const Services = () => {
         body: new URLSearchParams({ id: serviceId }).toString()
       });
       if (data.status === "success" && data.data && data.data.length > 0) {
-        navigate(`/items/${serviceId}`);
+        navigate(`/items/${serviceId}`, { state: { fromService: true } }); // أضيفي state عشان نحمي الـ route
       } else {
         Swal.fire({
           icon: 'info',
