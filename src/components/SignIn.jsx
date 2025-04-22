@@ -4,7 +4,6 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import GoogleAuth from './GoogleAuth';
 import { loginUser, fetchUserProfile, checkEmail, resetPassword } from '../store/authSlice';
 import '../styles/SignIn.css';
 
