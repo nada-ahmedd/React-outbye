@@ -2,6 +2,7 @@
 #service-details {
   padding: 20px;
   text-align: center;
+  margin-top: 80px;
 }
 
 .service-card {
@@ -70,7 +71,7 @@
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  max-width: 400px;
+  max-width: 600px;
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease; /* أضفنا transition */
 }

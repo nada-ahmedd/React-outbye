@@ -157,7 +157,6 @@ const SignIn = () => {
                   </div>
                 </div>
               </form>
-              <GoogleAuth actionType="Sign In" />
               <div className="signup-link" style={{ marginTop: '15px' }}>
                 <p>
                   Don't have an account?{' '}

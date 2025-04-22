@@ -30,8 +30,8 @@ h1 {
 .orders-container {
   width: 90%;
   max-width: 1000px;
-  margin: 20px auto 60px;
-  background: rgba(216, 204, 204, 0.05);
+  margin: 80px auto 60px;
+  background: rgba(179, 54, 54, 0.05);
   padding: 30px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(242, 107, 10, 0.1);

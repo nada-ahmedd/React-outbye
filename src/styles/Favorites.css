@@ -3,23 +3,16 @@
   padding: 30px;
   background: linear-gradient(135deg, #f5f7fa 0%, #ffe6d1 100%);
   min-height: 100vh;
+  margin-top: 70px;
 }
 
-.favorites-page h1 {
-  color: #F26B0A;
-  text-align: center;
-  font-weight: 700;
-  font-size: 3.5rem;
-  text-transform: uppercase;
-  margin: 80px 0 40px;
-  text-shadow: 2px 2px 8px rgba(242, 107, 10, 0.3);
-}
+
 
 #favorites-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
-  max-width: 1200px;
+  max-width: 80%;
   margin: 0 auto;
 }
 

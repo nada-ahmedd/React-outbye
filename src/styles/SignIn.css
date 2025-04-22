@@ -1,65 +1,63 @@
 .signin-page.container-fluid {
-  padding: 0;
+  margin-top: 20px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffe6d1 100%);
 }
 
-.signin-page .signin-container {
+.signin-container {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffe6d1 100%);
+  border-radius: 15px;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.signin-container .col-md-6 {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
-  background: linear-gradient(135deg, #E6F0FA 0%, #FFF3E6 100%);
-  padding: 20px 0;
+  padding: 0;
 }
 
-.signin-page .signin-image {
-  flex: 1;
-  max-width: 50%;
-  height: 100%;
-  background: url('/images/sign.jpg') no-repeat center center;
-  background-size: cover;
-  position: relative;
-  animation: fadeIn 1s ease-in-out;
+.signin-image {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 15px 0 0 15px;
+  transition: transform 0.3s ease;
 }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+.signin-image:hover {
+  transform: scale(1.02);
 }
 
-.signin-page .sign-in-form {
-  flex: 1;
-  max-width: 50%;
+.sign-in-form {
+  width: 100%;
   padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 0 20px 20px 0;
+
 }
 
-.signin-page .sign-in-form h2 {
-  font-size: 2.5rem;
+.sign-in-form h2 {
+  font-size: 3rem;
   font-weight: 700;
-  margin-bottom: 15px;
-  color: #1a1a1a;
-  font-family: 'Roboto Slab', serif;
-  position: relative;
+  margin-bottom: 40px;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
   text-align: center;
 }
 
-.signin-page .sign-in-form h2::after {
+.sign-in-form h2::after {
   content: '';
-  width: 60px;
+  width: 50px;
   height: 4px;
   background: #F26B0A;
   display: block;
@@ -67,153 +65,108 @@
   border-radius: 2px;
 }
 
-.signin-page .sign-in-form .text-muted {
-  color: #666;
-  margin-bottom: 30px;
+.sign-in-form .text-muted {
+  color: #777;
+  margin-bottom: 20px;
   font-size: 1rem;
-  line-height: 1.6;
   text-align: center;
+  font-family: 'Poppins', sans-serif;
 }
 
-.signin-page .form-control {
+.form-control {
   width: 100%;
-  max-width: 400px;
-  padding: 14px 20px;
-  border-bottom: 2px solid #CCC;
-  border-radius: 10px;
+  padding: 20px 30px;
   border: none;
+  border-bottom: 2px solid #CCC;
+  border-radius: 8px;
   font-size: 1rem;
-  margin: 0 auto 20px;
+  margin: 0 auto 30px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  display: block;
 }
 
-.signin-page .form-control::placeholder {
-  color: #aaa;
-}
-
-.signin-page .form-control:focus {
+.form-control:focus {
   border-color: #F26B0A;
-  box-shadow: 0 0 10px rgba(242, 107, 10, 0.3);
+  box-shadow: 0 0 8px rgba(242, 107, 10, 0.2);
   outline: none;
 }
 
-.signin-page .form-error {
-  color: #e63946;
-  font-size: 0.85rem;
-  margin-top: -15px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.signin-page .button-container {
+.button-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 400px;
-  margin: 25px 0;
+  margin: 15px 0px;
+  gap: 25%;
 }
 
-.signin-page .btn {
+.button-container .btn {
   background: linear-gradient(90deg, #F26B0A, #ff5e62);
   color: #fff;
-  padding: 14px 15px;
+  padding: 10px 25px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
-  max-width: 150px;
-  width: 100%;
+  width: 140px;
 }
 
-.signin-page .btn:hover {
-  background: linear-gradient(90deg, #e65c00, #ff4b5e);
-  transform: scale(1.03);
+.button-container .btn:hover {
+  background: linear-gradient(90deg, #F26B0A, #ff5e62);
+  transform: scale(1.02);
 }
 
-.signin-page .btn:disabled {
+.button-container .btn:disabled {
   background: #ccc;
   cursor: not-allowed;
   transform: none;
+  
 }
 
-.signin-page .forgot-password {
-  margin: 0;
+.forgot-password a {
+    color: #e65c00;
+
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.4rem;
+  transition: color 0.3s ease;
 }
 
-.signin-page .forgot-password a {
-  color: #F26B0A;
+.forgot-password a:hover {
+  color: #e65c00;
+  text-decoration: underline;
+}
+
+.signup-link {
+  margin-top: 10px;
+  text-align: center;
+}
+.signup-link a{
+   font-size: 1.2rem;
+   font-weight: 600;
+}
+.signup-link p {
+  color: #666;
+  font-size: 1.2rem;
+  margin-top: 30px;
+}
+
+.signup-link-a {
+  color: #e65c00;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
   transition: color 0.3s ease;
 }
 
-.signin-page .forgot-password a:hover {
-  color: #ff5e62;
+.signup-link-a:hover {
+  color: #e65c00;
   text-decoration: underline;
 }
 
-.signin-page .google-signin {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  max-width: 320px;
-  width: 100%;
-  padding: 12px;
-  margin: 15px auto 0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: background 0.3s ease;
-}
-
-.signin-page .google-signin img {
-  width: 20px;
-  height: 20px;
-}
-
-.signin-page .google-signin:hover {
-  background: #f5f5f5;
-}
-
-.signin-page .signup-link {
-  margin-top: 15px;
-  text-align: center;
-}
-
-.signin-page .signup-link p {
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 0;
-}
-
-.signin-page .signup-link-a {
-  display: inline-block;
-  padding: 8px 16px;
-  background: linear-gradient(90deg, #F26B0A, #ff5e62);
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  border-radius: 8px;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.signin-page .signup-link-a:hover {
-  background: linear-gradient(90deg, #e65c00, #ff4b5e);
-  transform: scale(1.03);
-  color: #fff;
-  text-decoration: none;
-}
-
-.signin-page .modal {
+/* المودال */
+.modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -226,48 +179,43 @@
   z-index: 1000;
 }
 
-.signin-page .modal-content {
-  background: #FFF9F0;
+.modal-content {
+  background: #fff;
   padding: 25px;
-  border-radius: 12px;
+  border-radius: 10px;
   width: 90%;
   max-width: 400px;
   text-align: center;
-  position: relative;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.signin-page .modal-content h3 {
-  margin-bottom: 20px;
-  font-size: 1.6rem;
-  color: #1a1a1a;
-  font-family: 'Roboto Slab', serif;
+.modal-content h3 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
 }
 
-.signin-page .modal-content input {
+.modal-content input {
   width: 100%;
   max-width: 300px;
-  padding: 10px 0;
-  margin-bottom: 15px;
-  border: none;
-  border-bottom: 2px solid #ddd;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
   font-size: 0.9rem;
-  background: transparent;
 }
 
-.signin-page .modal-content input::placeholder {
-  color: #aaa;
-}
-
-.signin-page .modal-content input:focus {
-  border-bottom-color: #F26B0A;
+.modal-content input:focus {
+  border-color: #F26B0A;
   outline: none;
 }
 
-.signin-page .modal-content .modal-submit {
+.modal-content .modal-submit {
   background: linear-gradient(90deg, #F26B0A, #ff5e62);
   color: #fff;
-  padding: 10px 20px;
+  padding: 10px 25px;
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -277,168 +225,303 @@
   margin: 5px;
 }
 
-.signin-page .modal-content .modal-submit:hover {
-  background: linear-gradient(90deg, #e65c00, #ff4b5e);
-}
 
-.signin-page .modal-content .modal-submit:disabled {
+
+.modal-content .modal-submit:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
 
-.signin-page .close-modal {
+.close-modal {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background: none;
+  top: 10px;
+  right: 10px;
+  background: #F26B0A;
+  color: #fff;
   border: none;
-  font-size: 1.5rem;
-  color: #666;
+  font-size: 1.2rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
 }
 
-.signin-page .close-modal:hover {
-  color: #F26B0A;
+.close-modal:hover {
+  background: #e65c00;
+  transform: rotate(90deg);
 }
 
-.signin-page .error-message {
-  color: #e63946;
-  font-size: 0.85rem;
-  margin-top: 8px;
-}
-
-.signin-page .back-btn {
-  background: #ccc;
+.back-btn {
+  background: #ddd;
   color: #333;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 25px;
   font-size: 0.9rem;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
-.signin-page .back-btn:hover {
-  background: #bbb;
+.back-btn:hover {
+  background: #ccc;
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .signin-container {
+    width: 95%;
+  }
+
+  .sign-in-form {
+    padding: 35px;
+  }
+
+  .form-control {
+    max-width: 400px;
+  }
+
+  .button-container {
+    max-width: 400px;
+    gap: 20%;
+  }
+}
+
 @media (max-width: 1024px) {
-  .signin-page .signin-container {
-    flex-direction: column;
-    padding: 10px 0;
+  .signin-container {
+    width: 100%;
+    margin: 25px auto;
   }
 
-  .signin-page .signin-image {
-    max-width: 100%;
-    height: 40vh;
-    border-radius: 20px 20px 0 0;
+  .signin-image {
+    width: 100%;
+    height: 350px;
+    border-radius: 15px 15px 0 0;
   }
 
-  .signin-page .sign-in-form {
-    max-width: 100%;
-    border-radius: 0 0 20px 20px;
+  .sign-in-form {
+    width: 100%;
+    padding: 30px;
   }
 
-  .signin-page .sign-in-form h2 {
-    font-size: 2rem;
+  .sign-in-form h2 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
   }
 
-  .signin-page .form-control,
-  .signin-page .btn,
-  .signin-page .google-signin {
+  .sign-in-form h2::after {
+    width: 45px;
+  }
+
+  .form-control {
     max-width: 350px;
+  }
+
+  .button-container {
+    max-width: 350px;
+    gap: 15%;
   }
 }
 
 @media (max-width: 768px) {
-  .signin-page .sign-in-form {
-    padding: 20px;
+  .signin-container {
+    width: 100%;
+    margin: 20px auto;
   }
 
-  .signin-page .sign-in-form h2 {
-    font-size: 1.8rem;
+  .signin-image {
+    height: 300px;
   }
 
-  .signin-page .form-control,
-  .signin-page .btn,
-  .signin-page .google-signin {
-    max-width: 300px;
+  .sign-in-form {
+    padding: 25px;
   }
 
-  .signin-page .sign-in-form h2::after {
+  .sign-in-form h2 {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+  }
+
+  .sign-in-form h2::after {
     width: 40px;
-    height: 3px;
   }
 
-  .signin-page .sign-in-form .text-muted {
-    font-size: 0.9rem;
-    margin-bottom: 20px;
+  .sign-in-form .text-muted {
+    font-size: 0.95rem;
+    margin-bottom: 15px;
   }
 
-  .signin-page .modal-content {
+  .form-control {
+    max-width: 300px;
+    padding: 10px 12px;
+  }
+
+  .button-container {
+    max-width: 300px;
+    gap: 10%;
+  }
+
+  .modal-content {
     padding: 20px;
-    max-width: 340px;
+    max-width: 350px;
   }
 
-  .signin-page .modal-content h3 {
+  .modal-content h3 {
     font-size: 1.4rem;
   }
 
-  .signin-page .modal-content input,
-  .signin-page .modal-content .modal-submit {
+  .modal-content input {
     max-width: 280px;
-  }
-
-  .signin-page .signup-link-a {
-    padding: 6px 12px;
-    font-size: 0.9rem;
   }
 }
 
 @media (max-width: 480px) {
-  .signin-page .sign-in-form {
-    padding: 15px;
+  .signin-container {
+    width: 95%;
+    max-width: 400px;
+    margin: 15px auto;
   }
 
-  .signin-page .sign-in-form h2 {
+  .signin-image {
+    height: 250px;
+  }
+
+  .sign-in-form {
+    padding: 20px;
+  }
+
+  .sign-in-form h2 {
     font-size: 1.5rem;
+    margin-bottom: 20px;
   }
 
-  .signin-page .form-control,
-  .signin-page .btn,
-  .signin-page .google-signin {
-    max-width: 100%;
-    padding: 12px 15px;
-  }
-
-  .signin-page .sign-in-form h2::after {
-    width: 30px;
+  .sign-in-form h2::after {
+    width: 35px;
     height: 2px;
   }
 
-  .signin-page .sign-in-form .text-muted {
-    font-size: 0.85rem;
-    margin-bottom: 15px;
+  .sign-in-form .text-muted {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
   }
 
-  .signin-page .signup-link-a {
-    padding: 5px 10px;
+  .form-control {
+    max-width: 100%;
+    padding: 8px 10px;
+  }
+
+  .button-container {
+    flex-direction: column;
+    gap: 10px;
+    max-width: 100%;
+  }
+
+  .button-container .btn {
+    width: 100%;
+    max-width: 200px;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+  }
+
+  .forgot-password a {
     font-size: 0.85rem;
   }
 
-  .signin-page .modal-content {
+  .signup-link p {
+    font-size: 0.85rem;
+  }
+
+  .signup-link-a {
+    font-size: 0.85rem;
+  }
+
+  .modal-content {
     padding: 15px;
     max-width: 300px;
   }
 
-  .signin-page .modal-content h3 {
+  .modal-content h3 {
     font-size: 1.3rem;
   }
 
-  .signin-page .modal-content input,
-  .signin-page .modal-content .modal-submit {
+  .modal-content input {
     max-width: 100%;
+    padding: 8px;
+  }
+
+  .modal-content .modal-submit {
+    padding: 8px 20px;
+    font-size: 0.85rem;
+  }
+
+  .back-btn {
+    padding: 8px 20px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .signin-container {
+    width: 95%;
+    max-width: 320px;
+    margin: 10px auto;
+  }
+
+  .signin-image {
+    height: 200px;
+  }
+
+  .sign-in-form {
+    padding: 15px;
+  }
+
+  .sign-in-form h2 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+  }
+
+  .sign-in-form h2::after {
+    width: 30px;
+  }
+
+  .sign-in-form .text-muted {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+  }
+
+  .form-control {
+    padding: 7px 8px;
+    font-size: 0.9rem;
+  }
+
+  .button-container {
+    gap: 8px;
+  }
+
+  .button-container .btn {
+    max-width: 180px;
+    padding: 7px 15px;
+    font-size: 0.85rem;
+  }
+
+  .forgot-password a {
+    font-size: 0.8rem;
+  }
+
+  .modal-content {
+    padding: 12px;
+    max-width: 280px;
+  }
+
+  .modal-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .modal-content input {
+    padding: 7px;
+    font-size: 0.85rem;
   }
 }

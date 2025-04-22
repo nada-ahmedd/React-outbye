@@ -9,23 +9,43 @@ body {
   font-family: Arial, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   padding-top: 70px; /* ارتفاع الـ Navbar في الوضع الطبيعي */
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
 }
 
 /* Navbar Styles */
 .navbar {
-  position: fixed;
+  position: fixed !important; /* التغلب على Bootstrap */
   top: 0;
   left: 0;
   width: 100%;
   background-color: #000 !important;
   color: #fff !important;
-  z-index: 1000;
   height: 70px;
   display: flex;
   align-items: center;
-  box-shadow: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid #F26B0A;
+  will-change: transform;
+  z-index: 1000 !important;
+}
+
+/* التأكد من إن Bootstrap ما يأثرش على الـ position */
+.navbar-expand-lg {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000 !important;
 }
 
 .navbar .navbar-container {
@@ -360,7 +380,7 @@ body {
 
 @media (max-width: 991px) {
   body {
-    padding-top: 60px; /* تقليل الـ padding-top لما الـ Navbar يصغر */
+    padding-top: 60px; /* حافظي على الـ padding-top عشان المحتوى ما يتراكمش */
   }
 
   .navbar {
