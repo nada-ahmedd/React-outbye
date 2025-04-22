@@ -62,93 +62,24 @@ const SignUp = () => {
     }
   };
 
-  const handleGoogleSignUp = async () => {
-    try {
-      const response = await fetch('https://abdulrahmanantar.com/outbye/auth/google_login.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      const text = await response.text();
-      const jsonMatch = text.match(/{.*}/s);
-      let data = { status: 'error', message: 'Invalid response' };
-      if (jsonMatch) {
-        data = JSON.parse(jsonMatch[0]);
-      }
-
-      if (data.status === 'success' && data.auth_url) {
-        let modifiedAuthUrl = data.auth_url.includes('?')
-          ? `${data.auth_url}&format=html`
-          : `${data.auth_url}?format=html`;
-        const popup = window.open(modifiedAuthUrl, 'googleSignInPopup', 'width=600,height=600');
-        if (!popup) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Popup Blocked',
-            text: 'Please allow popups for this website and try again.',
-          });
-          return;
-        }
-        window.addEventListener('message', function messageHandler(event) {
-          if (event.data && event.data.type === 'googleLoginSuccess') {
-            const { token, users_id, email } = event.data;
-            if (token && users_id) {
-              dispatch({
-                type: 'auth/setUser',
-                payload: { userId: users_id, email: email || '', token },
-              });
-              Swal.fire({
-                icon: 'success',
-                title: 'Sign Up Successful!',
-                text: 'Redirecting to your profile...',
-                timer: 2000,
-                showConfirmButton: false,
-              }).then(() => {
-                navigate('/profile');
-              });
-              window.removeEventListener('message', messageHandler);
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Sign Up Failed',
-                text: 'Invalid authentication data received.',
-              });
-            }
-          }
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Google Sign Up Failed',
-          text: data.message || 'Unable to start Google sign up.',
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Connection Error',
-        text: 'Unable to connect to the server. Please try again later.',
-      });
-    }
-  };
-
   return (
     <>
       <Navbar />
       <div className="container-fluid signup-page">
         <div className="row signup-container">
           <div className="col-md-6 p-0">
-            <img src="/images/sign.jpg" alt="Signup Image" className="w-100 m-1 signup-image" />
+            <img src="/images/sign.jpg" alt="Signup Image" className="signup-image w-100 m-1" />
           </div>
           <div className="col-md-6">
             <div className="signup-form">
               <h2>Create an Account</h2>
               <p className="text-muted">Enter your details below</p>
-              <form id="signupForm" onSubmit={handleSignUp}>
+              <form onSubmit={handleSignUp}>
                 <div className="mb-3">
                   <input
                     type="text"
                     name="username"
-                    className="signup-input"
+                    className="form-control"
                     placeholder="User Name"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -159,7 +90,7 @@ const SignUp = () => {
                   <input
                     type="email"
                     name="email"
-                    className="signup-input"
+                    className="form-control"
                     placeholder="Email Address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -170,7 +101,7 @@ const SignUp = () => {
                   <input
                     type="tel"
                     name="phone"
-                    className="signup-input"
+                    className="form-control"
                     placeholder="Phone Number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
@@ -181,14 +112,14 @@ const SignUp = () => {
                   <input
                     type="password"
                     name="password"
-                    className="signup-input"
+                    className="form-control"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
-                <button type="submit" className="signup-submit" disabled={loading}>
+                <button type="submit" className="btn mb-3" disabled={loading}>
                   {loading ? 'Processing...' : 'Create Account'}
                 </button>
               </form>
@@ -200,10 +131,6 @@ const SignUp = () => {
                   </a>
                 </p>
               </div>
-              <button className="google-signup" onClick={handleGoogleSignUp}>
-                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" />
-                Sign in with Google
-              </button>
             </div>
           </div>
         </div>

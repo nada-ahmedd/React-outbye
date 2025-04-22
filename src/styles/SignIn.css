@@ -1,15 +1,25 @@
-.signin-page .container-fluid {
+.signin-page.container-fluid {
   padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .signin-page .signin-container {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
   background: linear-gradient(135deg, #E6F0FA 0%, #FFF3E6 100%);
+  padding: 20px 0;
 }
 
 .signin-page .signin-image {
   flex: 1;
-  background: url('/path-to-your-image.png') no-repeat center center;
+  max-width: 50%;
+  height: 100%;
+  background: url('/images/sign.jpg') no-repeat center center;
   background-size: cover;
   position: relative;
   animation: fadeIn 1s ease-in-out;
@@ -26,61 +36,65 @@
   }
 }
 
-.signin-page .signin-form {
+.signin-page .sign-in-form {
   flex: 1;
+  max-width: 50%;
   padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border-radius: 0 20px 20px 0;
 }
 
-.signin-page .signin-form h2 {
-  font-size: 2rem;
+.signin-page .sign-in-form h2 {
+  font-size: 2.5rem;
   font-weight: 700;
-  margin-top: 100px;
+  margin-bottom: 15px;
   color: #1a1a1a;
   font-family: 'Roboto Slab', serif;
+  position: relative;
   text-align: center;
 }
 
-.signin-page .signin-form h2::after {
+.signin-page .sign-in-form h2::after {
   content: '';
-  width: 50px;
-  height: 3px;
+  width: 60px;
+  height: 4px;
   background: #F26B0A;
   display: block;
-  margin: 8px auto;
+  margin: 10px auto;
   border-radius: 2px;
 }
 
-.signin-page .signin-form .text-muted {
+.signin-page .sign-in-form .text-muted {
   color: #666;
   margin-bottom: 30px;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.6;
   text-align: center;
 }
 
-.signin-page .signin-input {
+.signin-page .form-control {
   width: 100%;
-  max-width: 1000px;
-  padding: 14px 100px;
+  max-width: 400px;
+  padding: 14px 20px;
   border-bottom: 2px solid #CCC;
   border-radius: 10px;
   border: none;
   font-size: 1rem;
-  margin: 0 auto 30px;
+  margin: 0 auto 20px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   display: block;
 }
 
-.signin-page .signin-input::placeholder {
+.signin-page .form-control::placeholder {
   color: #aaa;
 }
 
-.signin-page .signin-input:focus {
-  border-bottom-color: #F26B0A;
+.signin-page .form-control:focus {
+  border-color: #F26B0A;
+  box-shadow: 0 0 10px rgba(242, 107, 10, 0.3);
   outline: none;
 }
 
@@ -97,37 +111,36 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
   margin: 25px 0;
-  margin-top: 20px;
-
 }
 
-.signin-page .signin-submit {
+.signin-page .btn {
   background: linear-gradient(90deg, #F26B0A, #ff5e62);
   color: #fff;
-  padding: 12px 20px;
+  padding: 14px 15px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.3s ease;
-  width: 100%;
+  transition: background 0.3s ease, transform 0.2s ease;
   max-width: 150px;
+  width: 100%;
 }
 
-.signin-page .signin-submit:hover {
+.signin-page .btn:hover {
   background: linear-gradient(90deg, #e65c00, #ff4b5e);
+  transform: scale(1.03);
 }
 
-.signin-page .signin-submit:disabled {
+.signin-page .btn:disabled {
   background: #ccc;
   cursor: not-allowed;
+  transform: none;
 }
 
 .signin-page .forgot-password {
-  margin:0;
+  margin: 0;
 }
 
 .signin-page .forgot-password a {
@@ -178,19 +191,26 @@
 .signin-page .signup-link p {
   color: #666;
   font-size: 0.9rem;
+  margin-bottom: 0;
 }
 
-.signin-page .signup-link a {
-  color: #F26B0A;
+.signin-page .signup-link-a {
+  display: inline-block;
+  padding: 8px 16px;
+  background: linear-gradient(90deg, #F26B0A, #ff5e62);
+  color: #fff;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.9rem;
-  transition: color 0.3s ease;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.signin-page .signup-link a:hover {
-  color: #ff5e62;
-  text-decoration: underline;
+.signin-page .signup-link-a:hover {
+  background: linear-gradient(90deg, #e65c00, #ff4b5e);
+  transform: scale(1.03);
+  color: #fff;
+  text-decoration: none;
 }
 
 .signin-page .modal {
@@ -307,43 +327,54 @@
 @media (max-width: 1024px) {
   .signin-page .signin-container {
     flex-direction: column;
+    padding: 10px 0;
   }
 
   .signin-page .signin-image {
-    height: 35vh;
-    border-radius: 15px 15px 0 0;
+    max-width: 100%;
+    height: 40vh;
+    border-radius: 20px 20px 0 0;
   }
 
-  .signin-page .signin-form {
-    border-radius: 0 0 15px 15px;
-    border-left: none;
-    border-top: 1px solid rgba(242, 107, 10, 0.1);
+  .signin-page .sign-in-form {
+    max-width: 100%;
+    border-radius: 0 0 20px 20px;
   }
 
-  .signin-page .signin-form h2 {
-    font-size: 1.8rem;
+  .signin-page .sign-in-form h2 {
+    font-size: 2rem;
   }
 
-  .signin-page .signin-input,
-  .signin-page .signin-submit,
+  .signin-page .form-control,
+  .signin-page .btn,
   .signin-page .google-signin {
-    max-width: 300px;
+    max-width: 350px;
   }
 }
 
 @media (max-width: 768px) {
-  .signin-page .signin-form {
-    padding: 25px;
+  .signin-page .sign-in-form {
+    padding: 20px;
   }
 
-  .signin-page .signin-form h2 {
-    font-size: 1.6rem;
+  .signin-page .sign-in-form h2 {
+    font-size: 1.8rem;
   }
 
-  .signin-page .signin-input,
-  .signin-page .signin-submit,
+  .signin-page .form-control,
+  .signin-page .btn,
   .signin-page .google-signin {
-    max-width: 280px;
+    max-width: 300px;
+  }
+
+  .signin-page .sign-in-form h2::after {
+    width: 40px;
+    height: 3px;
+  }
+
+  .signin-page .sign-in-form .text-muted {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
   }
 
   .signin-page .modal-content {
@@ -358,5 +389,56 @@
   .signin-page .modal-content input,
   .signin-page .modal-content .modal-submit {
     max-width: 280px;
+  }
+
+  .signin-page .signup-link-a {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .signin-page .sign-in-form {
+    padding: 15px;
+  }
+
+  .signin-page .sign-in-form h2 {
+    font-size: 1.5rem;
+  }
+
+  .signin-page .form-control,
+  .signin-page .btn,
+  .signin-page .google-signin {
+    max-width: 100%;
+    padding: 12px 15px;
+  }
+
+  .signin-page .sign-in-form h2::after {
+    width: 30px;
+    height: 2px;
+  }
+
+  .signin-page .sign-in-form .text-muted {
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+  }
+
+  .signin-page .signup-link-a {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+  }
+
+  .signin-page .modal-content {
+    padding: 15px;
+    max-width: 300px;
+  }
+
+  .signin-page .modal-content h3 {
+    font-size: 1.3rem;
+  }
+
+  .signin-page .modal-content input,
+  .signin-page .modal-content .modal-submit {
+    max-width: 100%;
   }
 }

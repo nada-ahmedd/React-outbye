@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom'; // أضيفي Link هنا
 import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import { resetCart } from '../store/cartSlice';
@@ -34,21 +34,16 @@ const Checkout = () => {
       return;
     }
 
-    // Check if there's saved checkout data in localStorage
     const savedCheckoutData = JSON.parse(localStorage.getItem('checkoutData')) || {};
-
-    // Get parameters from URL
     const params = new URLSearchParams(location.search);
     const newTotalPrice = params.get('totalPrice') || savedCheckoutData.totalPrice || '0';
     const newCoupon = params.get('coupon') || savedCheckoutData.coupon || '';
     const newDiscount = params.get('discount') || savedCheckoutData.discount || '0';
 
-    // Update state with either URL params or saved data
     setTotalPrice(newTotalPrice);
     setCoupon(newCoupon === 'N/A' ? '' : newCoupon);
     setDiscount(newDiscount);
 
-    // Save checkout data to localStorage
     const checkoutData = {
       totalPrice: newTotalPrice,
       coupon: newCoupon || 'N/A',
@@ -196,7 +191,6 @@ const Checkout = () => {
 
       console.log('Parsed Checkout API Response:', data);
 
-      // Clear data only after successful checkout
       localStorage.removeItem('checkoutData');
       localStorage.removeItem('cartItems');
       localStorage.removeItem('couponDiscount');
@@ -255,7 +249,7 @@ const Checkout = () => {
               </option>
             ))}
           </select>
-          <a href="/addresses" className="btn secondary">Add/Edit Address</a>
+          <Link to="/addresses" className="btn secondary">Add/Edit Address</Link> {/* استبدلي <a> بـ <Link> */}
         </div>
         <div className="action-buttons">
           <button type="submit" className="btn">Complete Order</button>

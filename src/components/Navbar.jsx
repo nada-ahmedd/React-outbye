@@ -15,7 +15,7 @@ const Navbar = () => {
   const cart = useSelector((state) => state.cart || { items: {} });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const searchContainerRef = useRef(null);
-  const dropdownRef = useRef(null); // إضافة ref للـ dropdown
+  const dropdownRef = useRef(null);
 
   const fetchWithToken = async (url, options = {}) => {
     const token = localStorage.getItem('token');
@@ -112,7 +112,6 @@ const Navbar = () => {
     }
   }, [isLoggedIn, isAdminLoggedIn, dispatch]);
 
-  // Event listener للـ search results
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
@@ -125,11 +124,10 @@ const Navbar = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [dispatch]);
 
-  // Event listener للـ dropdown
   useEffect(() => {
     const handleClickOutsideDropdown = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsDropdownOpen(false); // إغلاق الـ dropdown لما تضغطي برا
+        setIsDropdownOpen(false);
       }
     };
 
@@ -371,7 +369,7 @@ const Navbar = () => {
                 items.map((item) => (
                   <div className="search-result-item" key={item.items_id}>
                     <Link
-                      to={`/item?id=${item.items_id}&service_id=${item.service_id}`}
+                      to={`/item/${item.items_id}?service_id=${item.service_id}`}
                       className="search-result-link"
                       onClick={() => handleResultClick(item.service_id)}
                     >
@@ -394,7 +392,8 @@ const Navbar = () => {
                 services.map((service) => (
                   <div className="search-result-item" key={service.service_id}>
                     <Link
-                      to={`/item?service_id=${service.service_id}`}
+                      to={`/items/${service.service_id}`}
+                      state={{ fromService: true }}
                       className="search-result-link"
                       onClick={() => handleResultClick(service.service_id)}
                     >

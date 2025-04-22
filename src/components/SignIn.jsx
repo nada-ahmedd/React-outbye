@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useLocation, Link } from 'react-router-dom'; // أضيفي Link هنا
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import GoogleAuth from './GoogleAuth';
 import { loginUser, fetchUserProfile, checkEmail, resetPassword } from '../store/authSlice';
 import '../styles/SignIn.css';
 
@@ -111,75 +112,6 @@ const SignIn = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const response = await fetch('https://abdulrahmanantar.com/outbye/auth/google_login.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      const text = await response.text();
-      const jsonMatch = text.match(/{.*}/s);
-      let data = { status: 'error', message: 'Invalid response' };
-      if (jsonMatch) {
-        data = JSON.parse(jsonMatch[0]);
-      }
-
-      if (data.status && data.auth_url) {
-        let modifiedAuthUrl = data.auth_url.includes('?')
-          ? `${data.auth_url}&format=html`
-          : `${data.auth_url}?format=html`;
-        const popup =窓.open(modifiedAuthUrl, 'googleSignInPopup', 'width=600,height=600');
-        if (!popup) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Popup Blocked',
-            text: 'Please allow popups for this website and try again.',
-          });
-          return;
-        }
-        window.addEventListener('message', function messageHandler(event) {
-          if (event.data && event.data.type === 'googleLoginSuccess') {
-            const { token, users_id, email } = event.data;
-            if (token && users_id) {
-              dispatch({
-                type: 'auth/setUser',
-                payload: { userId: users_id, email: email || '', token },
-              });
-              Swal.fire({
-                icon: 'success',
-                title: 'Login Successful!',
-                text: 'Redirecting to your profile...',
-                timer: 2000,
-                showConfirmButton: false,
-              }).then(() => {
-                navigate('/profile');
-              });
-              window.removeEventListener('message', messageHandler);
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Login Failed',
-                text: 'Invalid authentication data received.',
-              });
-            }
-          }
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Google Login Failed',
-          text: data.message || 'Unable to start Google login.',
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Connection Error',
-        text: 'Unable to connect to the server. Please try again later.',
-      });
-    }
-  };
-
   return (
     <>
       <Navbar />
@@ -189,7 +121,7 @@ const SignIn = () => {
             <img src="/images/sign.jpg" alt="Login Image" className="w-100 m-1 signin-image" />
           </div>
           <div className="col-md-6">
-            <div className="signin-form">
+            <div className="sign-in-form">
               <h2>Log in to Exclusive</h2>
               <p className="text-muted">Enter your details below</p>
               <form id="loginForm" onSubmit={handleLogin}>
@@ -197,7 +129,7 @@ const SignIn = () => {
                   <input
                     type="email"
                     name="email"
-                    className="signin-input"
+                    className="form-control"
                     placeholder="Email Address"
                     value={emailOrPhone}
                     onChange={(e) => setEmailOrPhone(e.target.value)}
@@ -208,7 +140,7 @@ const SignIn = () => {
                   <input
                     type="password"
                     name="password"
-                    className="signin-input"
+                    className="form-control"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -216,7 +148,7 @@ const SignIn = () => {
                   />
                 </div>
                 <div className="button-container">
-                  <button type="submit" className="signin-submit" disabled={loading}>
+                  <button type="submit" className="btn" disabled={loading}>
                     {loading ? 'Processing...' : 'Log In'}
                   </button>
                   <div className="forgot-password">
@@ -226,14 +158,11 @@ const SignIn = () => {
                   </div>
                 </div>
               </form>
-              <button className="google-signin" onClick={handleGoogleSignIn}>
-                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" />
-                Sign in with Google
-              </button>
+              <GoogleAuth actionType="Sign In" />
               <div className="signup-link" style={{ marginTop: '15px' }}>
                 <p>
                   Don't have an account?{' '}
-                  <Link to="/signup" className="text-log"> {/* استبدلي <a> بـ <Link> */}
+                  <Link to="/signup" className="signup-link-a">
                     Sign Up
                   </Link>
                 </p>

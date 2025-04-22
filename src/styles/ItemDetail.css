@@ -1,0 +1,264 @@
+/* Service Details */
+#service-details {
+  padding: 20px;
+  text-align: center;
+}
+
+.service-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 100%;
+  margin: 0 auto;
+  height: auto; /* غيرنا الارتفاع لـ auto عشان يتكيف مع المحتوى */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* أضفنا transition */
+}
+
+/* Hover Effect على الـ Service Card */
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.service-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.service-img {
+  width: 100%;
+  max-width: 100px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: transform 0.3s ease; /* أضفنا transition للصورة */
+}
+
+/* Hover Effect على الصورة */
+.service-img:hover {
+  transform: scale(1.1);
+}
+
+.service-card h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0;
+}
+
+.service-card p {
+  font-size: 1rem;
+  color: #666;
+  margin: 5px 0;
+}
+
+.service-card .rating {
+  color: #F26B0A;
+}
+
+/* Item Details */
+#item-detail-container {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.item-detail {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 400px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* أضفنا transition */
+}
+
+/* Hover Effect على الـ Item Card */
+.item-detail:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.item-detail h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.item-detail p {
+  font-size: 1rem;
+  color: #666;
+  margin: 5px 0;
+}
+
+.item-detail .price .old-price {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 10px;
+}
+
+.item-detail .price .new-price {
+  color: #F26B0A;
+  font-weight: bold;
+}
+
+.item-detail .price .regular-price {
+  color: #333;
+  font-weight: bold;
+}
+
+.item-detail .discount {
+  color: #F26B0A;
+  font-weight: bold;
+}
+
+.item-detail .item-image {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  transition: transform 0.3s ease; /* أضفنا transition للصورة */
+}
+
+/* Hover Effect على الصورة */
+.item-detail .item-image:hover {
+  transform: scale(1.1);
+}
+
+.item-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.addItem-to-cart {
+  background: linear-gradient(90deg, #F26B0A, #ff5e62);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease; /* أضفنا transition */
+}
+
+/* Hover Effect على زر Add to Cart */
+.addItem-to-cart:hover {
+  background: linear-gradient(90deg, #e65c00, #ff4b5e);
+  transform: scale(1.05);
+}
+
+.favorite-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease, color 0.3s ease; /* أضفنا transition */
+}
+
+/* Hover Effect على زر Favorite */
+.favorite-btn:hover {
+  transform: scale(1.2);
+  color: #F26B0A;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .service-card {
+    padding: 15px;
+    height: auto; /* التأكد إن الارتفاع يتكيف */
+  }
+
+  .service-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .service-card p {
+    font-size: 0.9rem;
+  }
+
+  .service-img {
+    max-width: 80px;
+  }
+
+  .item-detail {
+    max-width: 100%;
+    padding: 15px;
+  }
+
+  .item-detail h3 {
+    font-size: 1.3rem;
+  }
+
+  .item-detail p {
+    font-size: 0.9rem;
+  }
+
+  .item-detail .item-image {
+    max-width: 150px;
+  }
+
+  .addItem-to-cart {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+
+  .favorite-btn {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #service-details,
+  #item-detail-container {
+    padding: 10px;
+  }
+
+  .service-card {
+    padding: 10px;
+  }
+
+  .service-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .service-card p {
+    font-size: 0.85rem;
+  }
+
+  .service-img {
+    max-width: 60px;
+  }
+
+  .item-detail {
+    padding: 10px;
+  }
+
+  .item-detail h3 {
+    font-size: 1.1rem;
+  }
+
+  .item-detail p {
+    font-size: 0.85rem;
+  }
+
+  .item-detail .item-image {
+    max-width: 120px;
+  }
+
+  .item-actions {
+    gap: 5px;
+  }
+
+  .addItem-to-cart {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .favorite-btn {
+    font-size: 0.9rem;
+  }
+}

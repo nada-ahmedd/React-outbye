@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useSelector } from 'react-redux';
 import { Provider } from 'react-redux';
 import { store } from './store/index';
-import { useState, useEffect } from 'react'; // استيراد useState و useEffect
+import { useState, useEffect } from 'react';
 
 import PrivateRoute from './components/PrivateRoute';
 import Layout from './components/Layout';
@@ -14,6 +14,7 @@ import VerifySignUp from './components/VerifySignUp';
 import VerifyForgetPassword from './components/VerifyForgetPassword';
 import Services from './components/Services';
 import Items from './components/Items';
+import ItemDetail from './components/ItemDetail'; // استيراد الصفحة الجديدة
 import Favorites from './components/Favorites';
 import Cart from './components/Cart';
 import Checkout from './components/Checkout';
@@ -23,7 +24,7 @@ import OrderDetails from './components/OrderDetails';
 import Archive from './components/Archive';
 import About from './components/About';
 import Contact from './components/Contact';
-import Loader from './components/Loader'; 
+import Loader from './components/Loader';
 
 function App() {
   const { isLoggedIn, isAdminLoggedIn } = useSelector((state) => state.auth);
@@ -31,7 +32,7 @@ function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsLoading(false); 
+      setIsLoading(false);
     }, 1500);
 
     return () => clearTimeout(timer);
@@ -47,10 +48,11 @@ function App() {
             {/* Public pages with Layout */}
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/services/:id" element={<Services />} />
               <Route path="/items/:id" element={<Items />} />
+              <Route path="/item/:itemId" element={<ItemDetail />} /> {/* Route جديدة للـ Item */}
             </Route>
 
             {/* SignIn and SignUp pages */}

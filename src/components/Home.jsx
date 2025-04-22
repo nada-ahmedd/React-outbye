@@ -330,10 +330,10 @@ const Home = () => {
                   <Link to={`/services/${category.categories_id}`} className="category-link">
                     <div className="category-box">
                       <img
-                        src={category.categories_image || 'public/images/out bye.png'}
+                        src={category.categories_image || 'images/out bye.png'}
                         alt={category.categories_name}
                         className="category-image"
-                        onError={(e) => (e.target.src = 'public/images/out bye.png')}
+                        onError={(e) => (e.target.src = 'images/out bye.png')}
                       />
                       <div className="category-description">
                         <p className="category-name">{category.categories_name || 'Unnamed Category'}</p>
@@ -363,10 +363,10 @@ const Home = () => {
                         <h5 className="service-name">{item.service_name || 'Unknown Service'}</h5>
                         <div className="image-container">
                           <img
-                            src={item.items_image || 'public/images/out bye.png'}
+                            src={item.items_image || 'images/out bye.png'}
                             alt={item.items_name}
                             className="card-image"
-                            onError={(e) => (e.target.src = 'public/images/out bye.png')}
+                            onError={(e) => (e.target.src = 'images/out bye.png')}
                           />
                         </div>
                         <h3 className="card-title">{item.items_name || 'Unnamed Item'}</h3>
@@ -415,10 +415,10 @@ const Home = () => {
                       <div className="card-content">
                         <div className="image-container">
                           <img
-                            src={item.items_image || 'public/images/out bye.png'}
+                            src={item.items_image || 'images/out bye.png'}
                             alt={item.items_name}
                             className="card-image"
-                            onError={(e) => (e.target.src = 'public/images/out bye.png')}
+                            onError={(e) => (e.target.src = 'images/out bye.png')}
                           />
                         </div>
                         <h3 className="card-title">{item.items_name || 'Unnamed Item'}</h3>
