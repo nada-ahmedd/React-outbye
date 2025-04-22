@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom'; // أضيفي Link هنا
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import { resetCart } from '../store/cartSlice';
@@ -18,7 +18,6 @@ const Checkout = () => {
   const { userId, isLoggedIn } = useSelector((state) => state.auth);
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('0');
   const [totalPrice, setTotalPrice] = useState('0');
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState('0');
@@ -175,7 +174,7 @@ const Checkout = () => {
       pricedelivery: '10',
       ordersprice: totalPrice,
       couponid: coupon && !isNaN(coupon) ? coupon : '0',
-      paymentmethod: paymentMethod,
+      paymentmethod: '0', // قيمة ثابتة لـ Cash
       coupondiscount: discount || '0',
     });
 
@@ -219,16 +218,8 @@ const Checkout = () => {
           <input type="text" id="price" value={totalPrice} readOnly />
         </div>
         <div className="form-group">
-          <label htmlFor="payment-method">Payment Method</label>
-          <select
-            id="payment-method"
-            value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-            required
-          >
-            <option value="0">Cash</option>
-            <option value="1">Payment Card</option>
-          </select>
+          <label>Payment Method</label>
+          <p>Cash</p> {/* عرض Cash كتكست ثابت */}
         </div>
         <div className="form-group">
           <label htmlFor="coupon-discount">Coupon Discount (%)</label>
@@ -249,7 +240,7 @@ const Checkout = () => {
               </option>
             ))}
           </select>
-          <Link to="/addresses" className="btn secondary">Add/Edit Address</Link> 
+          <Link to="/addresses" className="btn secondary">Add/Edit Address</Link>
         </div>
         <div className="action-buttons">
           <button type="submit" className="btn">Complete Order</button>

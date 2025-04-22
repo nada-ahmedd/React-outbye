@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Provider } from 'react-redux';
 import { store } from './store/index';
@@ -75,8 +75,8 @@ function App() {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          dispatch(clearTokenExpired()); // تصفير الحالة بعد التعامل معاها
-          navigate('/signin'); // التنقل باستخدام useNavigate
+          dispatch(clearTokenExpired());
+          navigate('/signin');
         }
       });
     }
@@ -84,101 +84,99 @@ function App() {
 
   return (
     <Provider store={store}>
-      <Router>
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/services/:id" element={<Services />} />
-              <Route path="/items/:id" element={<Items />} />
-              <Route path="/item/:itemId" element={<ItemDetail />} />
-            </Route>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/services/:id" element={<Services />} />
+            <Route path="/items/:id" element={<Items />} />
+            <Route path="/item/:itemId" element={<ItemDetail />} />
+          </Route>
 
+          <Route
+            path="/signup"
+            element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignUp />}
+          />
+          <Route
+            path="/signin"
+            element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignIn />}
+          />
+
+          <Route path="/verify-signup" element={<VerifySignUp />} />
+          <Route path="/verify-forget-password" element={<VerifyForgetPassword />} />
+
+          <Route element={<Layout />}>
             <Route
-              path="/signup"
-              element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignUp />}
+              path="/pending-orders"
+              element={
+                <PrivateRoute>
+                  <PendingOrders />
+                </PrivateRoute>
+              }
             />
             <Route
-              path="/signin"
-              element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignIn />}
+              path="/order-details"
+              element={
+                <PrivateRoute>
+                  <OrderDetails />
+                </PrivateRoute>
+              }
             />
-
-            <Route path="/verify-signup" element={<VerifySignUp />} />
-            <Route path="/verify-forget-password" element={<VerifyForgetPassword />} />
-
-            <Route element={<Layout />}>
-              <Route
-                path="/pending-orders"
-                element={
-                  <PrivateRoute>
-                    <PendingOrders />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/order-details"
-                element={
-                  <PrivateRoute>
-                    <OrderDetails />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/addresses"
-                element={
-                  <PrivateRoute>
-                    <Addresses />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <PrivateRoute>
-                    <Profile />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/archive"
-                element={
-                  <PrivateRoute>
-                    <Archive />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/favorites"
-                element={
-                  <PrivateRoute>
-                    <Favorites />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/cart"
-                element={
-                  <PrivateRoute>
-                    <Cart />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/checkout"
-                element={
-                  <PrivateRoute>
-                    <Checkout />
-                  </PrivateRoute>
-                }
-              />
-            </Route>
-          </Routes>
-        )}
-      </Router>
+            <Route
+              path="/addresses"
+              element={
+                <PrivateRoute>
+                  <Addresses />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/archive"
+              element={
+                <PrivateRoute>
+                  <Archive />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/favorites"
+              element={
+                <PrivateRoute>
+                  <Favorites />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <PrivateRoute>
+                  <Cart />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                <PrivateRoute>
+                  <Checkout />
+                </PrivateRoute>
+              }
+            />
+          </Route>
+        </Routes>
+      )}
     </Provider>
   );
 }
