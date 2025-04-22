@@ -157,7 +157,7 @@ const Services = () => {
                 data-src={service.service_image}
                 alt={service.service_name}
                 className="service-image"
-                onError={(e) => (e.target.src = '/public/images/out bye.png')}
+                onError={(e) => (e.target.src = 'images/out bye.png')}
               />
               <div className="service-content">
                 <h3 className="service-title">{service.service_name}</h3>

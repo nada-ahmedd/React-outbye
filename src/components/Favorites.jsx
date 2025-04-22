@@ -57,7 +57,6 @@ const Favorites = () => {
       });
 
       if (data.status === 'success' && Array.isArray(data.data) && data.data.length > 0) {
-        // Remove duplicates based on favorite_itemsid
         const uniqueItems = [];
         const seenItems = new Set();
         data.data.forEach((item) => {
@@ -139,7 +138,7 @@ const Favorites = () => {
             return (
               <div className="favorite-item" key={item.favorite_id} data-itemid={item.favorite_itemsid}>
                 {discount > 0 && <span className="discount-badge">{discount}% OFF</span>}
-                <img src={item.items_image} alt={item.items_name} onError={(e) => (e.target.src = '/public/images/out bye.png')} />
+                <img src={item.items_image} alt={item.items_name} onError={(e) => (e.target.src = 'images/out bye.png')} />
                 <div className="favorite-info">
                   <h3>{item.items_name}</h3>
                   <div className="price-container">

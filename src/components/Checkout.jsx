@@ -249,7 +249,7 @@ const Checkout = () => {
               </option>
             ))}
           </select>
-          <Link to="/addresses" className="btn secondary">Add/Edit Address</Link> {/* استبدلي <a> بـ <Link> */}
+          <Link to="/addresses" className="btn secondary">Add/Edit Address</Link> 
         </div>
         <div className="action-buttons">
           <button type="submit" className="btn">Complete Order</button>

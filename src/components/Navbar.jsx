@@ -374,7 +374,7 @@ const Navbar = () => {
                       onClick={() => handleResultClick(item.service_id)}
                     >
                       <img
-                        src={item.items_image || 'default.jpg'}
+                        src={item.items_image || 'images/out bye.png'}
                         alt={item.items_name || 'Item'}
                         width="50"
                       />
@@ -398,7 +398,7 @@ const Navbar = () => {
                       onClick={() => handleResultClick(service.service_id)}
                     >
                       <img
-                        src={service.service_image || 'default.jpg'}
+                        src={service.service_image || 'images/out bye.png'}
                         alt={service.service_name || 'Service'}
                         width="50"
                       />

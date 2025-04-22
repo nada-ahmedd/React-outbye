@@ -232,9 +232,9 @@ const OrderDetails = () => {
             items.map((item, index) => (
               <div key={index} className="item">
                 <img
-                  src={item.items_image || '/public/images/out bye.png'}
+                  src={item.items_image || 'images/out bye.png'}
                   alt={item.items_name}
-                  onError={(e) => (e.target.src = '/public/images/out bye.png')}
+                  onError={(e) => (e.target.src = 'images/out bye.png')}
                 />
                 <div className="item-info">
                   <p><strong>Product Name:</strong> {item.items_name}</p>

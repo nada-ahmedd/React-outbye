@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // استيراد Link
 import Swal from 'sweetalert2';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -126,9 +126,9 @@ const SignUp = () => {
               <div className="login-link">
                 <p>
                   Already have an account?{' '}
-                  <a href="/signin" className="text-log">
+                  <Link to="/signin" className="text-log">
                     Log in
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>

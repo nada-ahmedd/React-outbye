@@ -1,9 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Async Thunk لتسجيل الدخول
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expiry = payload.exp * 1000;
+    return Date.now() > expiry;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return true;
+  }
+};
+
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async (credentials, { rejectWithValue }) => {
+  async (credentials, { rejectWithValue, dispatch }) => {
     try {
       const response = await fetch('https://abdulrahmanantar.com/outbye/auth/login.php', {
         method: 'POST',
@@ -11,6 +22,10 @@ export const loginUser = createAsyncThunk(
         body: new URLSearchParams(credentials).toString(),
       });
       if (!response.ok) {
+        if (response.status === 401) {
+          dispatch(tokenExpired());
+          throw new Error('Token expired');
+        }
         throw new Error(`HTTP error! Status: ${response.status}, Status Text: ${response.statusText}`);
       }
       const text = await response.text();
@@ -36,10 +51,9 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Async Thunk للتسجيل
 export const signupUser = createAsyncThunk(
   'auth/signupUser',
-  async (userData, { rejectWithValue }) => {
+  async (userData, { rejectWithValue, dispatch }) => {
     try {
       const response = await fetch('https://abdulrahmanantar.com/outbye/auth/signup.php', {
         method: 'POST',
@@ -47,6 +61,10 @@ export const signupUser = createAsyncThunk(
         body: new URLSearchParams(userData).toString(),
       });
       if (!response.ok) {
+        if (response.status === 401) {
+          dispatch(tokenExpired());
+          throw new Error('Token expired');
+        }
         throw new Error(`HTTP error! Status: ${response.status}, Status Text: ${response.statusText}`);
       }
       const text = await response.text();
@@ -72,10 +90,9 @@ export const signupUser = createAsyncThunk(
   }
 );
 
-// Async Thunk لجلب بيانات الملف الشخصي
 export const fetchUserProfile = createAsyncThunk(
   'auth/fetchUserProfile',
-  async (userId, { rejectWithValue }) => {
+  async (userId, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch('https://abdulrahmanantar.com/outbye/profile/view.php', {
@@ -87,6 +104,10 @@ export const fetchUserProfile = createAsyncThunk(
         body: new URLSearchParams({ users_id: userId }),
       });
       if (!response.ok) {
+        if (response.status === 401) {
+          dispatch(tokenExpired());
+          throw new Error('Token expired');
+        }
         throw new Error(`HTTP error! Status: ${response.status}, Status Text: ${response.statusText}`);
       }
       const text = await response.text();
@@ -112,10 +133,9 @@ export const fetchUserProfile = createAsyncThunk(
   }
 );
 
-// Async Thunk للتحقق من البريد الإلكتروني
 export const checkEmail = createAsyncThunk(
   'auth/checkEmail',
-  async (email, { rejectWithValue }) => {
+  async (email, { rejectWithValue, dispatch }) => {
     try {
       const response = await fetch('https://abdulrahmanantar.com/outbye/forgetpassword/checkemail.php', {
         method: 'POST',
@@ -123,6 +143,10 @@ export const checkEmail = createAsyncThunk(
         body: new URLSearchParams({ email }),
       });
       if (!response.ok) {
+        if (response.status === 401) {
+          dispatch(tokenExpired());
+          throw new Error('Token expired');
+        }
         throw new Error(`HTTP error! Status: ${response.status}, Status Text: ${response.statusText}`);
       }
       const text = await response.text();
@@ -148,18 +172,21 @@ export const checkEmail = createAsyncThunk(
   }
 );
 
-// Async Thunk لإعادة تعيين كلمة المرور
 export const resetPassword = createAsyncThunk(
   'auth/resetPassword',
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue, dispatch }) => {
     try {
       console.log('Reset Password Payload:', { email, password });
       const response = await fetch('https://abdulrahmanantar.com/outbye/forgetpassword/resetpassword.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ email, password }), // تغيير من new_password إلى password
+        body: new URLSearchParams({ email, password }),
       });
       if (!response.ok) {
+        if (response.status === 401) {
+          dispatch(tokenExpired());
+          throw new Error('Token expired');
+        }
         throw new Error(`HTTP error! Status: ${response.status}, Status Text: ${response.statusText}`);
       }
       const text = await response.text();
@@ -199,6 +226,7 @@ const authSlice = createSlice({
     resetEmail: localStorage.getItem('resetEmail') || null,
     loading: false,
     error: null,
+    tokenExpired: false, // إضافة حقل جديد لتتبع حالة انتهاء التوكن
   },
   reducers: {
     setUser(state, action) {
@@ -231,6 +259,7 @@ const authSlice = createSlice({
       state.token = null;
       state.profile = null;
       state.resetEmail = null;
+      state.tokenExpired = false;
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('userId');
       localStorage.removeItem('email');
@@ -242,6 +271,30 @@ const authSlice = createSlice({
       localStorage.removeItem('favoritesCache');
       localStorage.removeItem('resetEmail');
       localStorage.removeItem('signupEmail');
+    },
+    tokenExpired(state) {
+      state.isLoggedIn = false;
+      state.isAdminLoggedIn = false;
+      state.userId = null;
+      state.email = null;
+      state.token = null;
+      state.profile = null;
+      state.resetEmail = null;
+      state.tokenExpired = true; // تغيير الحالة لإشعار App.jsx
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('email');
+      localStorage.removeItem('token');
+      localStorage.removeItem('profileData');
+      localStorage.removeItem('isAdminLoggedIn');
+      localStorage.removeItem('adminId');
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('favoritesCache');
+      localStorage.removeItem('resetEmail');
+      localStorage.removeItem('signupEmail');
+    },
+    clearTokenExpired(state) {
+      state.tokenExpired = false; // تصفير الحالة بعد التعامل معاها
     },
     setLoading(state, action) {
       state.loading = action.payload;
@@ -255,7 +308,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Login User
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -276,7 +328,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Sign Up User
       .addCase(signupUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -296,7 +347,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Fetch User Profile
       .addCase(fetchUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -310,7 +360,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Check Email
       .addCase(checkEmail.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -324,7 +373,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Reset Password
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -341,5 +389,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, setAdmin, setProfile, logout, setLoading, setError, clearError } = authSlice.actions;
+export const { setUser, setAdmin, setProfile, logout, tokenExpired, clearTokenExpired, setLoading, setError, clearError } = authSlice.actions;
 export default authSlice.reducer;

@@ -8,12 +8,45 @@ body {
   font-family: Arial, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
-  display: flex; /* إضافة Flexbox */
-  flex-direction: column; /* ترتيب العناصر عمودياً */
+  display: flex;
+  flex-direction: column;
 }
 
-main { /* استهدف الـ main content (هنفترض إنه بيحتوي على الـ main-content) */
-  flex: 1 0 auto; /* خلي المحتوى الرئيسي ياخد المساحة المتبقية */
+main {
+  flex: 1 0 auto;
+}
+
+.sweet-alert-custom {
+  border-radius: 15px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sweet-alert-title {
+  font-size: 1.5rem;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+.sweet-alert-content {
+  font-size: 1rem;
+  color: #666;
+  font-family: 'Poppins', sans-serif;
+}
+
+.sweet-alert-confirm {
+  background: #F26B0A !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 10px 25px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  transition: background 0.3s ease !important;
+}
+
+.sweet-alert-confirm:hover {
+  background: #e65c00 !important;
 }
 
 @media (max-width: 991px) {

@@ -257,10 +257,10 @@ const Items = () => {
           <div className="service-card">
             <div className="service-header">
               <img
-                src={serviceDetails.service_image || '/public/images/out bye.png'}
+                src={serviceDetails.service_image || 'images/out bye.png'}
                 alt={serviceDetails.service_name}
                 className="service-img"
-                onError={(e) => (e.target.src = '/public/images/out bye.png')}
+                onError={(e) => (e.target.src = 'images/out bye.png')}
               />
               <h2>{serviceDetails.service_name}</h2>
             </div>
@@ -301,10 +301,10 @@ const Items = () => {
                 </p>
                 <p className="discount">{discount > 0 ? `Discount: ${discount}%` : ''}</p>
                 <img
-                  src={item.items_image || '/public/images/out bye.png'}
+                  src={item.items_image || 'images/out bye.png'}
                   alt={item.items_name}
                   className="item-image"
-                  onError={(e) => (e.target.src = '/public/images/out bye.png')}
+                  onError={(e) => (e.target.src = 'images/out bye.png')}
                 />
                 <div className="item-actions">
                   <button className="addItem-to-cart" onClick={() => addToCart(item.items_id)}>

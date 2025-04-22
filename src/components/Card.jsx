@@ -10,10 +10,10 @@ const Card = ({ item, onAddToCart, onToggleFavorite }) => {
         {item.service_name && <h5 className="service-name">{item.service_name || 'Unknown Service'}</h5>}
         <div className="image-container">
           <img
-            src={item.items_image || 'public/images/out bye.png'}
+            src={item.items_image || 'images/out bye.png'}
             alt={item.items_name}
             className="card-image"
-            onError={(e) => (e.target.src = 'public/images/out bye.png')}
+            onError={(e) => (e.target.src = 'images/out bye.png')}
           />
         </div>
         <h3 className="card-title">{item.items_name || 'Unnamed Item'}</h3>
