@@ -300,10 +300,10 @@ const ItemDetail = () => {
             </p>
             <p className="discount">{item.items_discount > 0 ? `Discount: ${item.items_discount}%` : ''}</p>
             <img
-              src={item.items_image || 'images/out bye.png'}
+              src={item.items_image || '/images/out bye.png'}
               alt={item.items_name}
               className="item-image"
-              onError={(e) => (e.target.src = 'images/out bye.png')}
+              onError={(e) => (e.target.src = '/images/out bye.png')}
             />
             <div className="item-actions">
               <button className="addItem-to-cart" onClick={() => addToCart(item.items_id)}>
