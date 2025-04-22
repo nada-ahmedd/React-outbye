@@ -66,7 +66,8 @@ const SignIn = () => {
     }
   };
 
-  const handleForgotPassword = () => {
+  const handleForgotPassword = (e) => {
+    e.preventDefault(); // منع السلوك الافتراضي للـ <a>
     setShowForgotModal(true);
   };
 
