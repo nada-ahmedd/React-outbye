@@ -22,7 +22,25 @@ const Navbar = () => {
     const userId = localStorage.getItem('userId');
 
     if (!token || !userId) {
-      dispatch(setError('No token or userId found'));
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Session Ended',
+        text: 'Your session has ended. Please log in again.',
+        confirmButtonText: 'Login',
+        confirmButtonColor: '#F26B0A',
+        backdrop: `rgba(0,0,0,0.8)`,
+        customClass: {
+          popup: 'sweet-alert-custom',
+          title: 'sweet-alert-title',
+          content: 'sweet-alert-content',
+          confirmButton: 'sweet-alert-confirm',
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          dispatch(logout());
+          navigate('/signin');
+        }
+      });
       return null;
     }
 
@@ -39,6 +57,28 @@ const Navbar = () => {
         body: options.body || new URLSearchParams({ users_id: userId }),
       });
       if (!response.ok) {
+        if (response.status === 401) {
+          await Swal.fire({
+            icon: 'warning',
+            title: 'Session Ended',
+            text: 'Your session has ended. Please log in again.',
+            confirmButtonText: 'Login',
+            confirmButtonColor: '#F26B0A',
+            backdrop: `rgba(0,0,0,0.8)`,
+            customClass: {
+              popup: 'sweet-alert-custom',
+              title: 'sweet-alert-title',
+              content: 'sweet-alert-content',
+              confirmButton: 'sweet-alert-confirm',
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              dispatch(logout());
+              navigate('/signin');
+            }
+          });
+          return null;
+        }
         dispatch(setError(`HTTP error! Status: ${response.status}`));
         return null;
       }
