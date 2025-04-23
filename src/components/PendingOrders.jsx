@@ -62,7 +62,11 @@ const PendingOrders = () => {
               <p><strong>Order ID:</strong> {order.orders_id}</p>
               <p><strong>Total Price:</strong> {order.orders_totalprice} EGP</p>
               <p><strong>Order Date:</strong> {order.orders_datetime}</p>
-              <p><strong>Status:</strong> {order.orders_status === '0' ? 'Processing' : 'Completed'}</p>
+              <p><strong>Status:</strong> 
+                {order.orders_status === '0' ? 'Processing' : 
+                 order.orders_status === '2' ? 'Approved' : 
+                 order.orders_status === '1' ? 'Rejected' : 'Unknown'}
+              </p>
             </div>
             <div className="order-actions">
               <button className="btn" onClick={() => navigate(`/order-details?orderId=${order.orders_id}`)}>
