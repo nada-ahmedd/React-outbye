@@ -12,11 +12,10 @@
   padding: 20px;
   max-width: 100%;
   margin: 0 auto;
-  height: auto; /* غيرنا الارتفاع لـ auto عشان يتكيف مع المحتوى */
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* أضفنا transition */
+  height: auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Hover Effect على الـ Service Card */
 .service-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -35,10 +34,9 @@
   height: auto;
   border-radius: 8px;
   margin-bottom: 10px;
-  transition: transform 0.3s ease; /* أضفنا transition للصورة */
+  transition: transform 0.3s ease;
 }
 
-/* Hover Effect على الصورة */
 .service-img:hover {
   transform: scale(1.1);
 }
@@ -73,10 +71,9 @@
   padding: 20px;
   max-width: 600px;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* أضفنا transition */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Hover Effect على الـ Item Card */
 .item-detail:hover {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -121,10 +118,9 @@
   height: auto;
   border-radius: 8px;
   margin: 10px 0;
-  transition: transform 0.3s ease; /* أضفنا transition للصورة */
+  transition: transform 0.3s ease;
 }
 
-/* Hover Effect على الصورة */
 .item-detail .item-image:hover {
   transform: scale(1.1);
 }
@@ -143,10 +139,9 @@
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease; /* أضفنا transition */
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
-/* Hover Effect على زر Add to Cart */
 .addItem-to-cart:hover {
   background: linear-gradient(90deg, #e65c00, #ff4b5e);
   transform: scale(1.05);
@@ -157,20 +152,42 @@
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
-  transition: transform 0.2s ease, color 0.3s ease; /* أضفنا transition */
+  transition: transform 0.2s ease, color 0.3s ease;
 }
 
-/* Hover Effect على زر Favorite */
 .favorite-btn:hover {
   transform: scale(1.2);
   color: #F26B0A;
+}
+
+/* السبينر */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  width: 100%;
+}
+
+.spinner {
+  border: 4px solid rgba(242, 107, 10, 0.1);
+  border-top: 4px solid #F26B0A;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .service-card {
     padding: 15px;
-    height: auto; /* التأكد إن الارتفاع يتكيف */
+    height: auto;
   }
 
   .service-card h2 {

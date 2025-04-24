@@ -13,6 +13,7 @@ const PendingOrders = () => {
   const navigate = useNavigate();
   const { userId, isLoggedIn } = useSelector((state) => state.auth);
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true); // أضفنا حالة التحميل
 
   useEffect(() => {
     if (!isLoggedIn || !userId) {
@@ -29,6 +30,7 @@ const PendingOrders = () => {
   }, [isLoggedIn, userId, navigate]);
 
   const loadPendingOrders = async () => {
+    setLoading(true); // بدء التحميل
     try {
       const response = await fetch(ENDPOINTS.PENDING_ORDERS, {
         method: 'POST',
@@ -47,13 +49,20 @@ const PendingOrders = () => {
     } catch (error) {
       console.error('Error loading pending orders:', error);
       Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load pending orders!' });
+      setOrders([]);
+    } finally {
+      setLoading(false); // إنهاء التحميل
     }
   };
 
   return (
     <div className="orders-container">
       <h1>Pending Orders</h1>
-      {orders.length === 0 ? (
+      {loading ? (
+        <div className="spinner-container">
+          <div className="spinner" />
+        </div>
+      ) : orders.length === 0 ? (
         <div className="no-orders">No pending orders found.</div>
       ) : (
         orders.map((order) => (

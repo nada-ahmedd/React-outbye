@@ -43,7 +43,7 @@ const Services = () => {
         title: 'Invalid Category',
         text: 'Invalid category ID.',
       });
-      navigate('/'); // رجعي المستخدم للـ Home لو الـ id مش صح
+      navigate('/');
       return;
     }
 
@@ -83,7 +83,7 @@ const Services = () => {
         body: new URLSearchParams({ id: serviceId }).toString()
       });
       if (data.status === "success" && data.data && data.data.length > 0) {
-        navigate(`/items/${serviceId}`, { state: { fromService: true } }); // أضيفي state عشان نحمي الـ route
+        navigate(`/items/${serviceId}`, { state: { fromService: true } });
       } else {
         Swal.fire({
           icon: 'info',
@@ -145,7 +145,9 @@ const Services = () => {
       {/* Services Container */}
       <div id="services-container">
         {servicesLoading ? (
-          <p>Loading services...</p>
+          <div className="spinner-container">
+            <div className="spinner" />
+          </div>
         ) : services.length > 0 ? (
           services.map(service => (
             <div

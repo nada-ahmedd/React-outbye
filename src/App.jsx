@@ -1,5 +1,6 @@
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from './store/authSlice';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { Provider } from 'react-redux';
 import { store } from './store/index';
 import { useState, useEffect } from 'react';
@@ -27,8 +28,23 @@ import Contact from './components/Contact';
 import Loader from './components/Loader';
 
 function App() {
-  const { isLoggedIn, isAdminLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, isAdminLoggedIn, tokenExpiresAt } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
+
+  // فحص انتهاء التوكن
+  useEffect(() => {
+    const checkTokenExpiration = () => {
+      if (tokenExpiresAt && Date.now() > parseInt(tokenExpiresAt)) {
+        dispatch(logout());
+      }
+    };
+
+    checkTokenExpiration(); // فحص أولي
+    const interval = setInterval(checkTokenExpiration, 60 * 1000); // فحص كل دقيقة
+
+    return () => clearInterval(interval);
+  }, [tokenExpiresAt, dispatch]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

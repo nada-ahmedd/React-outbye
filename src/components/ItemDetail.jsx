@@ -283,7 +283,9 @@ const ItemDetail = () => {
       {/* Item Details */}
       <div id="item-detail-container">
         {loading ? (
-          <p>Loading item...</p>
+          <div className="spinner-container">
+            <div className="spinner" />
+          </div>
         ) : item ? (
           <div className="item-detail">
             <h3>{item.items_name}</h3>

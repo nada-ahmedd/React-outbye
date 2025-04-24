@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom'; // أضيفي useLocation
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import '../styles/Items.css';
 
 const Items = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation(); // جيبي الـ state من الـ navigation
+  const location = useLocation();
   const [serviceDetails, setServiceDetails] = useState(null);
   const [items, setItems] = useState([]);
   const [itemsLoading, setItemsLoading] = useState(true);
@@ -14,7 +14,7 @@ const Items = () => {
 
   // تحققي إذا كان المستخدم جاي من Service
   if (!location.state?.fromService) {
-    navigate('/'); // لو مش جاي من Service، رجعيه للـ Home
+    navigate('/');
     return null;
   }
 
@@ -51,7 +51,7 @@ const Items = () => {
     if (!id) {
       console.error("❌ No service ID found!");
       setItemsLoading(false);
-      navigate('/'); // رجعي المستخدم للـ Home لو الـ id مش موجود
+      navigate('/');
       return;
     }
 
@@ -277,7 +277,9 @@ const Items = () => {
       {/* Items Container */}
       <div id="items-container">
         {itemsLoading ? (
-          <p>Loading items...</p>
+          <div className="spinner-container">
+            <div className="spinner" />
+          </div>
         ) : items.length > 0 ? (
           items.map(item => {
             const price = item.items_price;

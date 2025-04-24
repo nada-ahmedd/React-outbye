@@ -29,10 +29,14 @@ const SignIn = () => {
 
   useEffect(() => {
     if (error) {
+      let errorMessage = error;
+      if (error.includes('Failed to fetch')) {
+        errorMessage = 'Cannot connect to the server. Please check your internet connection or try again later.';
+      }
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: error,
+        text: errorMessage,
       });
       dispatch({ type: 'auth/clearError' });
     }
@@ -40,11 +44,13 @@ const SignIn = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!emailOrPhone || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrPhone)) {
+    // حذف الفاليديشن على حقل الإيميل
+    // بنتأكد بس إن الحقل مش فاضي
+    if (!emailOrPhone) {
       Swal.fire({
         icon: 'error',
-        title: 'Invalid Email',
-        text: 'Please enter a valid email.',
+        title: 'Empty Field',
+        text: 'Please enter your email or phone number.',
       });
       return;
     }
@@ -67,7 +73,7 @@ const SignIn = () => {
   };
 
   const handleForgotPassword = (e) => {
-    e.preventDefault(); // منع السلوك الافتراضي للـ <a>
+    e.preventDefault();
     setShowForgotModal(true);
   };
 
@@ -127,10 +133,10 @@ const SignIn = () => {
               <form id="loginForm" onSubmit={handleLogin}>
                 <div className="mb-3">
                   <input
-                    type="email"
+                    type="text" // غيرنا من email إلى text عشان يقبل أي قيمة
                     name="email"
                     className="form-control"
-                    placeholder="Email Address"
+                    placeholder="Email Address Or Phone Number"
                     value={emailOrPhone}
                     onChange={(e) => setEmailOrPhone(e.target.value)}
                     required

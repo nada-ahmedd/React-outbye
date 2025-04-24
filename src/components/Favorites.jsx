@@ -127,7 +127,9 @@ const Favorites = () => {
   return (
     <div className="favorites-page">
       {loading ? (
-        <p>Loading...</p>
+        <div className="spinner-container">
+          <div className="spinner" />
+        </div>
       ) : favorites.length > 0 ? (
         <div id="favorites-container">
           {favorites.map((item) => {

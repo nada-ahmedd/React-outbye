@@ -157,7 +157,7 @@ export const resetPassword = createAsyncThunk(
       const response = await fetch('https://abdulrahmanantar.com/outbye/forgetpassword/resetpassword.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ email, password }), // تغيير من new_password إلى password
+        body: new URLSearchParams({ email, password }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}, Status Text: ${response.statusText}`);
@@ -197,6 +197,7 @@ const authSlice = createSlice({
     token: localStorage.getItem('token') || null,
     profile: JSON.parse(localStorage.getItem('profileData')) || null,
     resetEmail: localStorage.getItem('resetEmail') || null,
+    tokenExpiresAt: localStorage.getItem('tokenExpiresAt') || null,
     loading: false,
     error: null,
   },
@@ -231,6 +232,7 @@ const authSlice = createSlice({
       state.token = null;
       state.profile = null;
       state.resetEmail = null;
+      state.tokenExpiresAt = null;
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('userId');
       localStorage.removeItem('email');
@@ -242,6 +244,7 @@ const authSlice = createSlice({
       localStorage.removeItem('favoritesCache');
       localStorage.removeItem('resetEmail');
       localStorage.removeItem('signupEmail');
+      localStorage.removeItem('tokenExpiresAt');
     },
     setLoading(state, action) {
       state.loading = action.payload;
@@ -267,10 +270,13 @@ const authSlice = createSlice({
         state.userId = action.payload.user_id;
         state.token = action.payload.token;
         state.email = action.meta.arg.email || '';
+        const expiresAt = Date.now() + 2 * 60 * 60 * 1000; // ساعتين
+        state.tokenExpiresAt = expiresAt;
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userId', action.payload.user_id);
         localStorage.setItem('token', action.payload.token);
         localStorage.setItem('email', action.meta.arg.email || '');
+        localStorage.setItem('tokenExpiresAt', expiresAt.toString());
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
