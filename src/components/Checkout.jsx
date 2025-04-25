@@ -21,6 +21,7 @@ const Checkout = () => {
   const [totalPrice, setTotalPrice] = useState('0');
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState('0');
+  const [orderType, setOrderType] = useState('0'); // Default to Delivery (0)
 
   useEffect(() => {
     if (!isLoggedIn || !userId) {
@@ -174,8 +175,9 @@ const Checkout = () => {
       pricedelivery: '10',
       ordersprice: totalPrice,
       couponid: coupon && !isNaN(coupon) ? coupon : '0',
-      paymentmethod: '0', // قيمة ثابتة لـ Cash
+      paymentmethod: '0',
       coupondiscount: discount || '0',
+      orderstype: orderType, // Add order type (0 for Delivery, 1 for Receive)
     });
 
     console.log('Form Data being sent:', formData.toString());
@@ -219,11 +221,23 @@ const Checkout = () => {
         </div>
         <div className="form-group">
           <label>Payment Method</label>
-          <p>Cash</p> {/* عرض Cash كتكست ثابت */}
+          <p>Cash</p>
         </div>
         <div className="form-group">
           <label htmlFor="coupon-discount">Coupon Discount (%)</label>
           <input type="text" id="coupon-discount" value={discount} readOnly />
+        </div>
+        <div className="form-group">
+          <label htmlFor="order-type">Order Type</label>
+          <select
+            id="order-type"
+            value={orderType}
+            onChange={(e) => setOrderType(e.target.value)}
+            required
+          >
+            <option value="0">Delivery</option>
+            <option value="1">Receive</option>
+          </select>
         </div>
         <div className="form-group">
           <label htmlFor="address">Select Address</label>

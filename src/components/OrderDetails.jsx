@@ -7,8 +7,6 @@ import '../styles/OrderDetails.css';
 const API_BASE_URL = "https://abdulrahmanantar.com/outbye/";
 const ENDPOINTS = {
   ORDER_DETAILS: `${API_BASE_URL}orders/details.php`,
-  DELETE_ORDER: `${API_BASE_URL}orders/delete.php`,
-  PENDING_ORDERS: `${API_BASE_URL}orders/pending.php`, // أضفنا الـ endpoint ده
 };
 
 const OrderDetails = () => {
@@ -16,7 +14,6 @@ const OrderDetails = () => {
   const location = useLocation();
   const { userId, isLoggedIn } = useSelector((state) => state.auth);
   const [items, setItems] = useState([]);
-  const [orderStatus, setOrderStatus] = useState(null); // State جديد لتخزين الـ status
 
   useEffect(() => {
     if (!isLoggedIn || !userId) {
@@ -67,7 +64,7 @@ const OrderDetails = () => {
           console.error('Unauthorized, clearing localStorage and redirecting');
           localStorage.clear();
           await Swal.fire({
-            icon: 'warning',
+            icon: 'warning"',
             title: 'Error',
             text: 'Unauthorized. Please log in again.',
           });
@@ -141,83 +138,6 @@ const OrderDetails = () => {
         text: error.message || 'Failed to load order details!',
       });
     }
-
-    // جلب الـ status بتاع الـ order
-    try {
-      const statusResponse = await fetchWithToken(ENDPOINTS.PENDING_ORDERS, {
-        method: 'POST',
-        body: new URLSearchParams({ userid: userId }).toString(),
-      });
-
-      console.log("Pending Orders Response for Status:", statusResponse);
-
-      if (statusResponse.status === 'success' && statusResponse.data) {
-        const order = statusResponse.data.find((o) => o.orders_id === orderId);
-        if (order) {
-          setOrderStatus(order.orders_status);
-        }
-      }
-    } catch (error) {
-      console.error("Error loading order status:", error);
-    }
-  };
-
-  const deleteOrder = async () => {
-    const urlParams = new URLSearchParams(location.search);
-    const orderId = urlParams.get("orderId");
-
-    if (!orderId) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Order ID not found!',
-        confirmButtonText: 'Back',
-      }).then(() => navigate('/pending-orders'));
-      return;
-    }
-
-    if (orderStatus !== '0') {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Cannot Delete Order',
-        text: 'This order has already been approved and cannot be deleted.',
-        confirmButtonText: 'OK',
-      });
-      return;
-    }
-
-    const formData = new URLSearchParams({
-      ordersid: orderId,
-    });
-
-    try {
-      const response = await fetchWithToken(ENDPOINTS.DELETE_ORDER, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.status === 'success') {
-        Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'Order deleted successfully!',
-          confirmButtonText: 'Back',
-        }).then(() => navigate('/pending-orders'));
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: response.message || 'Failed to delete the order!',
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting order:", error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message || 'Failed to delete the order!',
-      });
-    }
   };
 
   return (
@@ -246,14 +166,7 @@ const OrderDetails = () => {
             ))
           )}
         </div>
-        <div className="order-actions">
-          <button className="btn" onClick={() => navigate('/pending-orders')}>
-            Back to Orders
-          </button>
-          <button className="btn delete" onClick={deleteOrder}>
-            Delete Order
-          </button>
-        </div>
+       
       </div>
     </div>
   );

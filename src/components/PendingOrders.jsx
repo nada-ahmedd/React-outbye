@@ -7,13 +7,14 @@ import '../styles/PendingOrders.css';
 const API_BASE_URL = "https://abdulrahmanantar.com/outbye/";
 const ENDPOINTS = {
   PENDING_ORDERS: `${API_BASE_URL}orders/pending.php`,
+  DELETE_ORDER: `${API_BASE_URL}orders/delete.php`,
 };
 
 const PendingOrders = () => {
   const navigate = useNavigate();
   const { userId, isLoggedIn } = useSelector((state) => state.auth);
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true); // أضفنا حالة التحميل
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!isLoggedIn || !userId) {
@@ -29,20 +30,84 @@ const PendingOrders = () => {
     loadPendingOrders();
   }, [isLoggedIn, userId, navigate]);
 
-  const loadPendingOrders = async () => {
-    setLoading(true); // بدء التحميل
+  const fetchWithToken = async (url, options = {}) => {
     try {
-      const response = await fetch(ENDPOINTS.PENDING_ORDERS, {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found, redirecting to login');
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Error',
+          text: 'No authentication token found. Please log in again.',
+        });
+        navigate('/signin');
+        throw new Error('No authentication token found. Please log in again.');
+      }
+
+      options.headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      options.signal = controller.signal;
+
+      console.log("Sending request to:", url);
+      const response = await fetch(url, options);
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`HTTP error! Status: ${response.status} - ${errorText}`);
+        if (response.status === 401 || response.status === 403) {
+          console.error('Unauthorized, clearing localStorage and redirecting');
+          localStorage.clear();
+          await Swal.fire({
+            icon: 'warning',
+            title: 'Error',
+            text: 'Unauthorized. Please log in again.',
+          });
+          navigate('/signin');
+          throw new Error('Unauthorized: Please log in again.');
+        }
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
+      }
+
+      const text = await response.text();
+      console.log("Raw Response:", text);
+
+      try {
+        const data = text.trim() ? JSON.parse(text) : { status: "success" };
+        console.log("Parsed Response:", data);
+        return data;
+      } catch (e) {
+        console.error("Failed to parse response as JSON:", e);
+        throw new Error(`Unexpected response format: ${text}`);
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timed out after 10 seconds');
+      }
+      if (error.message.includes('Failed to fetch')) {
+        throw new Error('Network error: Unable to connect to the server.');
+      }
+      throw error;
+    }
+  };
+
+  const loadPendingOrders = async () => {
+    setLoading(true);
+    try {
+      const response = await fetchWithToken(ENDPOINTS.PENDING_ORDERS, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
         body: new URLSearchParams({ userid: userId }).toString(),
       });
-      const data = await response.json();
-      if (data.status === 'success' && data.data) {
-        setOrders(data.data);
+      if (response.status === 'success' && response.data) {
+        // فلترة الطلبات لعرض اللي حالتها "0" فقط (Processing)
+        const pendingOrders = response.data.filter(order => order.orders_status === '0');
+        setOrders(pendingOrders);
       } else {
         setOrders([]);
       }
@@ -51,7 +116,44 @@ const PendingOrders = () => {
       Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load pending orders!' });
       setOrders([]);
     } finally {
-      setLoading(false); // إنهاء التحميل
+      setLoading(false);
+    }
+  };
+
+  const deleteOrder = async (orderId) => {
+    const formData = new URLSearchParams({
+      ordersid: orderId,
+    });
+
+    try {
+      const response = await fetchWithToken(ENDPOINTS.DELETE_ORDER, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.status === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Order deleted successfully!',
+          confirmButtonText: 'OK',
+        });
+        // إعادة تحميل الطلبات بعد الحذف
+        setOrders(orders.filter(order => order.orders_id !== orderId));
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.message || 'Failed to delete the order!',
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message || 'Failed to delete the order!',
+      });
     }
   };
 
@@ -71,15 +173,14 @@ const PendingOrders = () => {
               <p><strong>Order ID:</strong> {order.orders_id}</p>
               <p><strong>Total Price:</strong> {order.orders_totalprice} EGP</p>
               <p><strong>Order Date:</strong> {order.orders_datetime}</p>
-              <p><strong>Status:</strong> 
-                {order.orders_status === '0' ? 'Processing' : 
-                 order.orders_status === '2' ? 'Approved' : 
-                 order.orders_status === '1' ? 'Rejected' : 'Unknown'}
-              </p>
+              <p><strong>Status:</strong> Processing</p>
             </div>
             <div className="order-actions">
               <button className="btn" onClick={() => navigate(`/order-details?orderId=${order.orders_id}`)}>
                 View Details
+              </button>
+              <button className="btn delete" onClick={() => deleteOrder(order.orders_id)}>
+                Delete
               </button>
             </div>
           </div>
