@@ -62,7 +62,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   position: relative;
   z-index: 1;
 }
@@ -74,20 +74,10 @@
   margin: 0;
 }
 
-.archive-page .order-status {
-  padding: 6px 20px;
-  border-radius: 25px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  background: linear-gradient(90deg, #28a745, #34c759);
-  color: #fff;
-  text-transform: capitalize;
-}
-
 .archive-page .order-details {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 15px;
+  gap: 10px;
   position: relative;
   z-index: 1;
 }
@@ -114,6 +104,104 @@
 .archive-page .order-details i {
   color: #F26B0A;
   font-size: 1.2rem;
+}
+
+.rating-section {
+  margin-top: 10px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 10px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 10px; /* إضافة مسافة بين rating-section و order-actions */
+}
+
+.rating-section h6 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.submitted-rating .stars {
+  margin-bottom: 8px;
+}
+
+.submitted-comment {
+  font-size: 0.95rem;
+  color: #333;
+  margin-top: 5px;
+  word-wrap: break-word;
+  background: #fff;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+}
+
+.stars {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.star {
+  font-size: 1.5rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.star.filled {
+  color: #F26B0A;
+}
+
+.star:hover,
+.star.filled:hover {
+  color: #e65c00;
+}
+
+.comment-input {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  resize: vertical;
+  margin-bottom: 8px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.comment-input:focus {
+  outline: none;
+  border-color: #F26B0A;
+  box-shadow: 0 0 5px rgba(242, 107, 10, 0.3);
+}
+
+.order-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn.submit-rating,
+.btn.view-details {
+  background: linear-gradient(90deg, #F26B0A, #ff5e62);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn.view-details {
+  background: linear-gradient(90deg, #6c757d, #5a6268);
+}
+
+.btn.submit-rating:hover,
+.btn.view-details:hover {
+  background: linear-gradient(90deg, #e65c00, #e63946);
+  transform: scale(1.05);
 }
 
 .archive-page .spinner-container {
@@ -204,9 +292,37 @@
     font-size: 1.1rem;
   }
 
-  .archive-page .order-status {
-    font-size: 0.8rem;
-    padding: 5px 15px;
+  .archive-page .order-details {
+    gap: 8px;
+  }
+
+  .rating-section {
+    margin-top: 8px;
+    padding-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  .rating-section h6 {
+    font-size: 0.9rem;
+  }
+
+  .submitted-comment {
+    font-size: 0.85rem;
+  }
+
+  .star {
+    font-size: 1.3rem;
+  }
+
+  .comment-input {
+    font-size: 0.85rem;
+    min-height: 60px;
+  }
+
+  .btn.submit-rating,
+  .btn.view-details {
+    font-size: 0.85rem;
+    padding: 6px 12px;
   }
 
   .archive-page .btn-refresh {
@@ -222,5 +338,36 @@
 
   .archive-page .order-header h5 {
     font-size: 1rem;
+  }
+
+  .archive-page .order-details {
+    gap: 6px;
+  }
+
+  .rating-section h6 {
+    font-size: 0.85rem;
+  }
+
+  .submitted-comment {
+    font-size: 0.8rem;
+  }
+
+  .star {
+    font-size: 1.2rem;
+  }
+
+  .comment-input {
+    font-size: 0.8rem;
+    min-height: 50px;
+  }
+
+  .btn.submit-rating,
+  .btn.view-details {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+
+  .order-actions {
+    gap: 8px;
   }
 }
