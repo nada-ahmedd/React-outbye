@@ -5,6 +5,7 @@ import { toggleFavorite, fetchFavorites } from '../store/favoritesSlice';
 import { fetchCart, addToCart } from '../store/cartSlice';
 import Swal from 'sweetalert2';
 import Glide from '@glidejs/glide';
+import Banner from './Banner';
 import '@glidejs/glide/dist/css/glide.core.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../styles/Home.css';
@@ -19,13 +20,15 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [discountItems, setDiscountItems] = useState([]);
   const [topSellingItems, setTopSellingItems] = useState([]);
+  const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeOfferId, setActiveOfferId] = useState(null);
   const discountRef = useRef(null);
   const topSellingRef = useRef(null);
 
   const fetchWithToken = async (url, options = {}) => {
     const token = localStorage.getItem('token');
-    const excludedAPIs = ["offers.php", "categories.php", "topselling.php", "services.php", "items.php", "search.php"];
+    const excludedAPIs = ["categories.php", "topselling.php", "services.php", "items.php", "search.php"];
     const isExcluded = excludedAPIs.some(api => url.includes(api));
     options.headers = {
       ...options.headers,
@@ -46,6 +49,55 @@ const Home = () => {
       console.error('Error parsing JSON:', e);
     }
     return data;
+  };
+
+  const fetchOffersData = async (url) => {
+    try {
+      const response = await fetch(url);
+      const text = await response.text();
+      console.log('Raw Response from', url, ':', text);
+
+      const trimmedText = text.trim();
+      const jsonMatch = trimmedText.match(/\[.*\]/s);
+      if (!jsonMatch) {
+        console.error('No valid JSON array found in response:', trimmedText);
+        return [];
+      }
+
+      const jsonText = jsonMatch[0];
+      console.log('Extracted JSON:', jsonText);
+
+      try {
+        const parsedData = JSON.parse(jsonText);
+        console.log('Parsed Offers Data:', parsedData);
+        return parsedData;
+      } catch (e) {
+        console.error('Error parsing JSON:', e, 'Extracted Text:', jsonText);
+        return [];
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+      return [];
+    }
+  };
+
+  const fetchOffers = async () => {
+    const offersUrl = "https://abdulrahmanantar.com/outbye/offers.php";
+    try {
+      const data = await fetchOffersData(offersUrl);
+      if (Array.isArray(data) && data.length > 0) {
+        setOffers(data);
+        setActiveOfferId(data[0]?.id || null);
+      } else {
+        setOffers([]);
+        setActiveOfferId(null);
+        console.log('No offers available, but no alert will be shown to user.');
+      }
+    } catch (error) {
+      console.error('Error fetching offers:', error);
+      setOffers([]);
+      setActiveOfferId(null);
+    }
   };
 
   const fetchCategories = async () => {
@@ -101,7 +153,18 @@ const Home = () => {
     }
   };
 
-  const handleAddToCart = async (itemId) => {
+  const handleAddToCart = async (itemId, type = 'item') => {
+    console.log('Button clicked, Item ID:', itemId, 'Type:', type);
+    if (!itemId) {
+      console.error('Error: Item ID is undefined or null');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Invalid item ID. Please try again.',
+      });
+      return;
+    }
+
     if (!userId) {
       Swal.fire({
         icon: "warning",
@@ -116,20 +179,22 @@ const Home = () => {
       return;
     }
 
+    console.log('Adding to cart: Item ID', itemId, 'Type:', type);
     try {
-      await dispatch(addToCart({ userId, itemId, quantity: 1 })).unwrap();
+      await dispatch(addToCart({ userId, itemId: String(itemId), quantity: 1, type })).unwrap();
       Swal.fire({
         icon: "success",
         title: "✅ Added!",
-        text: "Item added to cart successfully.",
+        text: `${type === 'offer' ? 'Offer' : 'Item'} added to cart successfully.`,
         confirmButtonText: "OK"
       });
       dispatch(fetchCart(userId));
     } catch (error) {
+      console.error('Error adding to cart:', error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: `Failed to add item to cart: ${error}`,
+        text: `Failed to add ${type === 'offer' ? 'offer' : 'item'} to cart: ${error}`,
         confirmButtonText: "OK"
       });
     }
@@ -172,6 +237,7 @@ const Home = () => {
   useEffect(() => {
     fetchCategories();
     fetchTopSelling();
+    fetchOffers();
 
     if (userId) {
       dispatch(fetchFavorites(userId));
@@ -217,37 +283,55 @@ const Home = () => {
 
   useEffect(() => {
     let currentSlide = 0;
-    const slides = document.querySelectorAll('.carousel-item');
-    const dots = document.querySelectorAll('.dot');
+    const slides = document.querySelectorAll('.offers-carousel-item');
+    const dots = document.querySelectorAll('.offer-card-dot');
 
     const showSlide = (index) => {
-      if (slides.length > 0 && dots.length > 0) {
+      if (slides.length > 0 && dots.length > 0 && index < slides.length && index < dots.length) {
         slides.forEach((slide, i) => {
           slide.classList.remove('active');
-          dots[i].classList.remove('active');
+          if (dots[i]) dots[i].classList.remove('active');
         });
         slides[index].classList.add('active');
         dots[index].classList.add('active');
+        const activeOffer = offers[index];
+        setActiveOfferId(activeOffer?.id || null);
+        console.log('Active Offer ID updated:', activeOffer?.id || 'None');
       }
     };
 
     const nextSlide = () => {
-      currentSlide = (currentSlide + 1) % slides.length;
-      showSlide(currentSlide);
+      if (slides.length > 0) {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      }
+    };
+
+    const handleDotClick = (index) => {
+      currentSlide = index;
+      showSlide(index);
     };
 
     dots.forEach((dot, index) => {
-      dot.addEventListener('click', () => {
-        currentSlide = index;
-        showSlide(currentSlide);
-      });
+      dot.removeEventListener('click', () => handleDotClick(index));
     });
 
-    showSlide(currentSlide);
-    const interval = setInterval(nextSlide, 3000);
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => handleDotClick(index));
+    });
 
-    return () => clearInterval(interval);
-  }, []);
+    if (slides.length > 0 && dots.length > 0) {
+      showSlide(currentSlide);
+      const interval = setInterval(nextSlide, 10000);
+
+      return () => {
+        clearInterval(interval);
+        dots.forEach((dot, index) => {
+          dot.removeEventListener('click', () => handleDotClick(index));
+        });
+      };
+    }
+  }, [offers]);
 
   useEffect(() => {
     if (discountItems.length > 0) {
@@ -295,28 +379,7 @@ const Home = () => {
 
   return (
     <>
-      <section className="banner">
-        <div className="carousel">
-          <div className="carousel-item active">
-            <img src="images/pexels-photo-260922.webp" alt="Slide 1" />
-            <div className="carousel-overlay"></div>
-          </div>
-          <div className="carousel-item">
-            <img src="images/lanscape-empty-restaurant.jpg" alt="Slide 2" />
-            <div className="carousel-overlay"></div>
-          </div>
-          <div className="carousel-item">
-            <img src="images/pexels-photo-338504.jpeg" alt="Slide 3" />
-            <div className="carousel-overlay"></div>
-          </div>
-        </div>
-        <div className="dots">
-          <span className="dot active"></span>
-          <span className="dot"></span>
-          <span className="dot"></span>
-        </div>
-        <div className="banner-text">Welcome to <span>OutBye</span></div>
-      </section>
+      <Banner />
 
       <div className="container">
         <h2 className="title">Categories</h2>
@@ -349,6 +412,82 @@ const Home = () => {
         </div>
       </div>
 
+  <section className="offers-section">
+  <h2 className="section-title">Special Offers</h2>
+  <div className="offers-carousel">
+    {offers.length > 0 ? (
+      offers.map((offer, index) => (
+        <div
+          className={`offers-carousel-item ${index === 0 ? 'active' : ''}`}
+          key={offer.id || `offer-${index}`}
+        >
+          <div className="offer-card">
+            <div className="offer-image-wrapper">
+              <img
+                src={offer.image || 'images/out bye.png'}
+                alt={offer.title || 'Offer'}
+                onError={(e) => (e.target.src = 'images/out bye.png')}
+                loading="lazy"
+              />
+            </div>
+            <div className="offer-details">
+              <p className="offer-restaurant">{offer.service_name || 'Unknown Restaurant'}</p>
+              <h3>{offer.title || 'Special Offer'}</h3>
+              <div className="offer-details-content">
+                <div className="offer-text">
+                  <p className="offer-description">{offer.description || 'Check Out This Deal'}</p>
+                  <p className="offer-price">{offer.price || 'N/A'} EGP</p>
+                  <button
+                    className="offer-add-to-cart"
+                    onClick={() => {
+                      console.log('Offer Add to Cart button clicked, Offer ID:', offer.id);
+                      handleAddToCart(offer.id, 'offer');
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))
+    ) : (
+      <div className="offers-carousel-item active">
+        <div className="offer-card">
+          <div className="offer-image-wrapper">
+            <img src="images/out bye.png" alt="Fallback" loading="lazy" />
+          </div>
+          <div className="offer-details">
+            <p className="offer-restaurant">No Restaurant</p>
+            <h3>No Offers Available</h3>
+            <div className="offer-details-content">
+              <div className="offer-text">
+                <p className="offer-description">Stay tuned for exciting deals!</p>
+                <button className="offer-add-to-cart" disabled>
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    <div className="offer-card-dots">
+      {offers.length > 0 ? (
+        offers.map((_, index) => (
+          <span
+            key={index}
+            className={`offer-card-dot ${index === 0 ? 'active' : ''}`}
+          ></span>
+        ))
+      ) : (
+        <span className="offer-card-dot active"></span>
+      )}
+    </div>
+  </div>
+</section>
+
       <section className="discount-section" ref={discountRef}>
         <h2 className="section-title">Our Discount</h2>
         {discountItems.length > 0 ? (
@@ -367,6 +506,7 @@ const Home = () => {
                             alt={item.items_name}
                             className="card-image"
                             onError={(e) => (e.target.src = 'images/out bye.png')}
+                            loading="lazy"
                           />
                         </div>
                         <h3 className="card-title">{item.items_name || 'Unnamed Item'}</h3>
@@ -376,7 +516,7 @@ const Home = () => {
                           <span className="new-price">{item.items_discount || '0'} EGP</span>
                         </p>
                         <div className="card-actions">
-                          <button className="addItem-to-cart" onClick={() => handleAddToCart(item.items_id)}>
+                          <button className="addItem-to-cart" onClick={() => handleAddToCart(item.items_id, 'item')}>
                             Add to Cart
                           </button>
                           <button
@@ -419,6 +559,7 @@ const Home = () => {
                             alt={item.items_name}
                             className="card-image"
                             onError={(e) => (e.target.src = 'images/out bye.png')}
+                            loading="lazy"
                           />
                         </div>
                         <h3 className="card-title">{item.items_name || 'Unnamed Item'}</h3>
@@ -434,7 +575,7 @@ const Home = () => {
                           )}
                         </p>
                         <div className="card-actions">
-                          <button className="addItem-to-cart" onClick={() => handleAddToCart(item.items_id)}>
+                          <button className="addItem-to-cart" onClick={() => handleAddToCart(item.items_id, 'item')}>
                             Add to Cart
                           </button>
                           <button

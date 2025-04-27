@@ -31,11 +31,19 @@ const Cart = () => {
   }, [dispatch, userId, isLoggedIn, navigate]);
 
   const handleIncrease = (itemId) => {
-    dispatch(increaseItemQuantity({ userId, itemId }));
+    // Check if the item is an offer
+    const isOffer = items.offers.some(item => item.cart_itemsid === itemId);
+    const type = isOffer ? 'offer' : 'item';
+    
+    dispatch(increaseItemQuantity({ userId, itemId, type }));
   };
 
   const handleDecrease = (itemId) => {
-    dispatch(decreaseItemQuantity({ userId, itemId }));
+    // Check if the item is an offer
+    const isOffer = items.offers.some(item => item.cart_itemsid === itemId);
+    const type = isOffer ? 'offer' : 'item';
+    
+    dispatch(decreaseItemQuantity({ userId, itemId, type }));
   };
 
   const handleApplyCoupon = () => {
@@ -50,7 +58,7 @@ const Cart = () => {
           title: 'Success',
           text: `Coupon applied successfully! ${couponDiscount}% discount`,
         });
-        setCouponInput(''); // Reset Coupon Input
+        setCouponInput('');
       } else {
         Swal.fire({
           icon: 'error',
@@ -88,90 +96,62 @@ const Cart = () => {
 
   const calculateTotalPrice = () => {
     let total = 0;
-    Object.values(items).forEach(category => {
-      if (category.datacart) {
+    // Other categories
+    const categories = [items.rest_cafe, items.hotel_tourist, ...(items.other_categories || [])];
+    categories.forEach(category => {
+      if (category?.datacart) {
         category.datacart.forEach(item => {
-          const originalPrice = parseFloat(item.items_price) || 0;
-          const discount = parseFloat(item.items_discount) || 0;
-          const discountedPrice = discount > 0 ? (originalPrice - (originalPrice * discount / 100)) : originalPrice;
+          const originalPrice = parseFloat(item.price) || 0;
+          const discount = parseFloat(item.discount) || 0;
+          const discountedPrice = discount > 0 ? (originalPrice * (1 - discount / 100)) : originalPrice;
           const quantity = parseInt(item.cart_quantity) || 0;
           total += discountedPrice * quantity;
         });
       }
     });
+    // Offers
+    if (items.offers?.length > 0) {
+      items.offers.forEach(item => {
+        const originalPrice = parseFloat(item.price) || 0;
+        const discount = parseFloat(item.discount) || 0;
+        const discountedPrice = discount > 0 ? (originalPrice * (1 - discount / 100)) : originalPrice;
+        const quantity = parseInt(item.cart_quantity) || 0;
+        total += discountedPrice * quantity;
+      });
+    }
     const discountAmount = (total * couponDiscount) / 100;
     return (total - discountAmount > 0 ? total - discountAmount : 0).toFixed(2);
   };
 
   const calculateTotalCount = () => {
     let count = 0;
-    Object.values(items).forEach(category => {
-      if (category.datacart) {
+    // Other categories
+    const categories = [items.rest_cafe, items.hotel_tourist, ...(items.other_categories || [])];
+    categories.forEach(category => {
+      if (category?.datacart) {
         count += category.datacart.reduce((sum, item) => sum + (parseInt(item.cart_quantity) || 0), 0);
       }
     });
+    // Offers
+    if (items.offers?.length > 0) {
+      count += items.offers.reduce((sum, item) => sum + (parseInt(item.cart_quantity) || 0), 0);
+    }
     return count;
   };
 
-  const renderCartItems = () => {
-    if (status === 'loading') return <tr><td colSpan="5">Loading...</td></tr>;
-    if (status === 'failed') return <tr><td colSpan="5">⚠️ Error fetching data.</td></tr>;
-    if (!items || Object.keys(items).length === 0) return <tr><td colSpan="5" className="empty-section">🛒 Cart is empty.</td></tr>;
-
-    let cartHTML = [];
-    let hasItems = false;
-
-    if (items.rest_cafe?.datacart?.length > 0) {
-      hasItems = true;
-      cartHTML.push(
-        <tr key="rest_cafe-divider" className="section-divider">
-          <td colSpan="5" className="section-title">Restaurants & Cafes</td>
-        </tr>,
-        ...items.rest_cafe.datacart.map(item => renderCartItem(item))
-      );
-    }
-
-    if (items.hotel_tourist?.datacart?.length > 0) {
-      hasItems = true;
-      cartHTML.push(
-        <tr key="hotel_tourist-divider" className="section-divider">
-          <td colSpan="5" className="section-title">Hotels & Tourist Places</td>
-        </tr>,
-        ...items.hotel_tourist.datacart.map(item => renderCartItem(item))
-      );
-    }
-
-    if (items.other_categories && Object.keys(items.other_categories).length > 0) {
-      Object.values(items.other_categories).forEach(category => {
-        if (category.datacart?.length > 0) {
-          hasItems = true;
-          cartHTML.push(
-            <tr key={`${category.cat_name}-divider`} className="section-divider">
-              <td colSpan="5" className="section-title">{category.cat_name || 'Other Categories'}</td>
-            </tr>,
-            ...category.datacart.map(item => renderCartItem(item))
-          );
-        }
-      });
-    }
-
-    if (!hasItems) return <tr><td colSpan="5" className="empty-section">🛒 Cart is empty.</td></tr>;
-    return cartHTML;
-  };
-
   const renderCartItem = (item) => {
-    const originalPrice = parseFloat(item.items_price) || 0;
-    const discount = parseFloat(item.items_discount) || 0;
-    const discountedPrice = discount > 0 ? (originalPrice - (originalPrice * discount / 100)) : originalPrice;
+    const originalPrice = parseFloat(item.price) || 0;
+    const discount = parseFloat(item.discount) || 0;
+    const discountedPrice = discount > 0 ? (originalPrice * (1 - discount / 100)) : originalPrice;
     const quantity = parseInt(item.cart_quantity) || 0;
     const totalPriceAfterDiscount = discountedPrice * quantity;
 
     return (
-      <tr key={item.cart_itemsid} id={`cart-item-${item.cart_itemsid}`} data-price={originalPrice} data-discount={discount}>
+      <tr key={item.cart_id} id={`cart-item-${item.cart_id}`} data-price={originalPrice} data-discount={discount}>
         <td>
-          <img src={item.items_image} alt={item.items_name} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+          <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
         </td>
-        <td>{item.items_name}</td>
+        <td>{item.name}</td>
         <td>
           {discount > 0 ? (
             <>
@@ -194,6 +174,65 @@ const Cart = () => {
         <td id={`total-${item.cart_itemsid}`}>{totalPriceAfterDiscount.toFixed(2)} EGP</td>
       </tr>
     );
+  };
+
+  const renderCartItems = () => {
+    if (status === 'loading') return <tr><td colSpan="5">Loading...</td></tr>;
+    if (status === 'failed') return <tr><td colSpan="5">⚠️ Error fetching data: {error}</td></tr>;
+
+    let cartHTML = [];
+    let hasItems = false;
+
+    // Restaurants & Cafes
+    if (items.rest_cafe?.datacart?.length > 0) {
+      hasItems = true;
+      cartHTML.push(
+        <tr key="rest_cafe-divider" className="section-divider">
+          <td colSpan="5" className="section-title">Restaurants & Cafes</td>
+        </tr>,
+        ...items.rest_cafe.datacart.map(item => renderCartItem(item))
+      );
+    }
+
+    // Hotels & Tourist Places
+    if (items.hotel_tourist?.datacart?.length > 0) {
+      hasItems = true;
+      cartHTML.push(
+        <tr key="hotel_tourist-divider" className="section-divider">
+          <td colSpan="5" className="section-title">Hotels & Tourist Places</td>
+        </tr>,
+        ...items.hotel_tourist.datacart.map(item => renderCartItem(item))
+      );
+    }
+
+    // Offers
+    if (items.offers?.length > 0) {
+      hasItems = true;
+      cartHTML.push(
+        <tr key="offers-divider" className="section-divider">
+          <td colSpan="5" className="section-title">Special Offers</td>
+        </tr>,
+        ...items.offers.map(item => renderCartItem(item))
+      );
+    }
+
+    // Other Categories
+    if (items.other_categories && Object.keys(items.other_categories).length > 0) {
+      Object.values(items.other_categories).forEach(category => {
+        if (category.datacart?.length > 0) {
+          hasItems = true;
+          cartHTML.push(
+            <tr key={`${category.cat_name}-divider`} className="section-divider">
+              <td colSpan="5" className="section-title">{category.cat_name || 'Other Categories'}</td>
+            </tr>,
+            ...category.datacart.map(item => renderCartItem(item))
+          );
+        }
+      });
+    }
+
+    if (!hasItems) return <tr><td colSpan="5" className="empty-section">🛒 Cart is empty.</td></tr>;
+    return cartHTML;
   };
 
   return (

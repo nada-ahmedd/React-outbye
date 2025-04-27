@@ -20,7 +20,12 @@ export const fetchCart = createAsyncThunk('cart/fetchCart', async (userId, { rej
     });
     const data = await response.json();
     if (data.status === 'success') {
-      return data;
+      return {
+        rest_cafe: data.rest_cafe || { datacart: [], countprice: { totalprice: "0", totalcount: "0" } },
+        hotel_tourist: data.hotel_tourist || { datacart: [], countprice: { totalprice: "0", totalcount: "0" } },
+        offers: data.offers || [], // Store as array
+        other_categories: data.other_categories || [],
+      };
     } else {
       return rejectWithValue(data.message || 'Failed to fetch cart');
     }
@@ -29,7 +34,7 @@ export const fetchCart = createAsyncThunk('cart/fetchCart', async (userId, { rej
   }
 });
 
-export const addToCart = createAsyncThunk('cart/addToCart', async ({ userId, itemId, quantity = 1 }, { rejectWithValue }) => {
+export const addToCart = createAsyncThunk('cart/addToCart', async ({ userId, itemId, quantity = 1, type = 'item' }, { rejectWithValue }) => {
   try {
     const response = await fetch(ENDPOINTS.ADD, {
       method: 'POST',
@@ -37,11 +42,11 @@ export const addToCart = createAsyncThunk('cart/addToCart', async ({ userId, ite
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
-      body: new URLSearchParams({ usersid: userId, itemsid: itemId, quantity }).toString(),
+      body: new URLSearchParams({ usersid: userId, itemsid: itemId, quantity, type }).toString(),
     });
     const data = await response.json();
     if (data.success) {
-      return { itemId, quantity };
+      return { itemId, quantity, type };
     } else {
       return rejectWithValue(data.message || 'Unable to add item to cart');
     }
@@ -50,7 +55,7 @@ export const addToCart = createAsyncThunk('cart/addToCart', async ({ userId, ite
   }
 });
 
-export const increaseItemQuantity = createAsyncThunk('cart/increaseItemQuantity', async ({ userId, itemId }, { rejectWithValue }) => {
+export const increaseItemQuantity = createAsyncThunk('cart/increaseItemQuantity', async ({ userId, itemId, type = 'item' }, { rejectWithValue }) => {
   try {
     const response = await fetch(ENDPOINTS.ADD, {
       method: 'POST',
@@ -58,11 +63,11 @@ export const increaseItemQuantity = createAsyncThunk('cart/increaseItemQuantity'
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
-      body: new URLSearchParams({ usersid: userId, itemsid: itemId }).toString(),
+      body: new URLSearchParams({ usersid: userId, itemsid: itemId, type }).toString(),
     });
     const data = await response.json();
     if (data.success) {
-      return { itemId };
+      return { itemId, type };
     } else {
       return rejectWithValue(data.message || 'Unable to increase quantity');
     }
@@ -71,7 +76,7 @@ export const increaseItemQuantity = createAsyncThunk('cart/increaseItemQuantity'
   }
 });
 
-export const decreaseItemQuantity = createAsyncThunk('cart/decreaseItemQuantity', async ({ userId, itemId }, { rejectWithValue }) => {
+export const decreaseItemQuantity = createAsyncThunk('cart/decreaseItemQuantity', async ({ userId, itemId, type = 'item' }, { rejectWithValue }) => {
   try {
     const response = await fetch(ENDPOINTS.DELETE, {
       method: 'POST',
@@ -79,11 +84,11 @@ export const decreaseItemQuantity = createAsyncThunk('cart/decreaseItemQuantity'
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
-      body: new URLSearchParams({ usersid: userId, itemsid: itemId }).toString(),
+      body: new URLSearchParams({ usersid: userId, itemsid: itemId, type }).toString(),
     });
     const data = await response.json();
     if (data.success) {
-      return { itemId };
+      return { itemId, type };
     } else {
       return rejectWithValue(data.message || 'Unable to decrease quantity');
     }
@@ -132,7 +137,12 @@ export const applyCoupon = createAsyncThunk('cart/applyCoupon', async ({ userId,
 const cartSlice = createSlice({
   name: 'cart',
   initialState: {
-    items: {},
+    items: {
+      rest_cafe: { datacart: [], countprice: { totalprice: "0", totalcount: "0" } },
+      hotel_tourist: { datacart: [], countprice: { totalprice: "0", totalcount: "0" } },
+      offers: [], // Changed to array
+      other_categories: [],
+    },
     couponDiscount: 0,
     isCouponApplied: false,
     status: 'idle',
@@ -140,7 +150,12 @@ const cartSlice = createSlice({
   },
   reducers: {
     resetCart: (state) => {
-      state.items = {};
+      state.items = {
+        rest_cafe: { datacart: [], countprice: { totalprice: "0", totalcount: "0" } },
+        hotel_tourist: { datacart: [], countprice: { totalprice: "0", totalcount: "0" } },
+        offers: [], // Reset to array
+        other_categories: [],
+      };
       state.couponDiscount = 0;
       state.isCouponApplied = false;
       state.status = 'idle';
@@ -154,7 +169,12 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.items = action.payload;
+        state.items = {
+          rest_cafe: action.payload.rest_cafe || { datacart: [], countprice: { totalprice: "0", totalcount: "0" } },
+          hotel_tourist: action.payload.hotel_tourist || { datacart: [], countprice: { totalprice: "0", totalcount: "0" } },
+          offers: action.payload.offers || [], // Store as array
+          other_categories: action.payload.other_categories || [],
+        };
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.status = 'failed';
@@ -171,33 +191,53 @@ const cartSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(increaseItemQuantity.fulfilled, (state, action) => {
-        const { itemId } = action.payload;
-        Object.values(state.items).forEach(category => {
-          if (category.datacart) {
-            const item = category.datacart.find(item => item.cart_itemsid === itemId);
-            if (item) {
-              item.cart_quantity = parseInt(item.cart_quantity) + 1;
-            }
+        const { itemId, type } = action.payload;
+        if (type === 'offer') {
+          const offer = state.items.offers.find(item => item.cart_itemsid === itemId);
+          if (offer) {
+            offer.cart_quantity = parseInt(offer.cart_quantity) + 1;
           }
-        });
+        } else {
+          const categories = [state.items.rest_cafe, state.items.hotel_tourist, ...(state.items.other_categories || [])];
+          categories.forEach(category => {
+            if (category?.datacart) {
+              const item = category.datacart.find(item => item.cart_itemsid === itemId);
+              if (item) {
+                item.cart_quantity = parseInt(item.cart_quantity) + 1;
+              }
+            }
+          });
+        }
       })
       .addCase(increaseItemQuantity.rejected, (state, action) => {
         state.error = action.payload;
       })
       .addCase(decreaseItemQuantity.fulfilled, (state, action) => {
-        const { itemId } = action.payload;
-        Object.values(state.items).forEach(category => {
-          if (category.datacart) {
-            const itemIndex = category.datacart.findIndex(item => item.cart_itemsid === itemId);
-            if (itemIndex !== -1) {
-              const item = category.datacart[itemIndex];
-              item.cart_quantity = parseInt(item.cart_quantity) - 1;
-              if (item.cart_quantity <= 0) {
-                category.datacart.splice(itemIndex, 1);
-              }
+        const { itemId, type } = action.payload;
+        if (type === 'offer') {
+          const offerIndex = state.items.offers.findIndex(item => item.cart_itemsid === itemId);
+          if (offerIndex !== -1) {
+            const offer = state.items.offers[offerIndex];
+            offer.cart_quantity = parseInt(offer.cart_quantity) - 1;
+            if (offer.cart_quantity <= 0) {
+              state.items.offers.splice(offerIndex, 1);
             }
           }
-        });
+        } else {
+          const categories = [state.items.rest_cafe, state.items.hotel_tourist, ...(state.items.other_categories || [])];
+          categories.forEach(category => {
+            if (category?.datacart) {
+              const itemIndex = category.datacart.findIndex(item => item.cart_itemsid === itemId);
+              if (itemIndex !== -1) {
+                const item = category.datacart[itemIndex];
+                item.cart_quantity = parseInt(item.cart_quantity) - 1;
+                if (item.cart_quantity <= 0) {
+                  category.datacart.splice(itemIndex, 1);
+                }
+              }
+            }
+          });
+        }
       })
       .addCase(decreaseItemQuantity.rejected, (state, action) => {
         state.error = action.payload;
