@@ -1,5 +1,4 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from './store/authSlice';
+import { useSelector } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/index';
@@ -28,24 +27,10 @@ import Contact from './components/Contact';
 import Loader from './components/Loader';
 
 function App() {
-  const { isLoggedIn, isAdminLoggedIn, tokenExpiresAt } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
+  const { isLoggedIn, isAdminLoggedIn } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true);
 
-  // فحص انتهاء التوكن
-  useEffect(() => {
-    const checkTokenExpiration = () => {
-      if (tokenExpiresAt && Date.now() > parseInt(tokenExpiresAt)) {
-        dispatch(logout());
-      }
-    };
-
-    checkTokenExpiration(); // فحص أولي
-    const interval = setInterval(checkTokenExpiration, 60 * 1000); // فحص كل دقيقة
-
-    return () => clearInterval(interval);
-  }, [tokenExpiresAt, dispatch]);
-
+  // Simulate loading delay
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -62,27 +47,15 @@ function App() {
         ) : (
           <Routes>
             <Route element={<Layout />}>
+              {/* Public routes */}
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/services/:id" element={<Services />} />
               <Route path="/items/:id" element={<Items />} />
               <Route path="/item/:itemId" element={<ItemDetail />} />
-            </Route>
 
-            <Route
-              path="/signup"
-              element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignUp />}
-            />
-            <Route
-              path="/signin"
-              element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignIn />}
-            />
-
-            <Route path="/verify-signup" element={<VerifySignUp />} />
-            <Route path="/verify-forget-password" element={<VerifyForgetPassword />} />
-
-            <Route element={<Layout />}>
+              {/* Protected routes */}
               <Route
                 path="/pending-orders"
                 element={
@@ -148,6 +121,19 @@ function App() {
                 }
               />
             </Route>
+
+            {/* Authentication routes */}
+            <Route
+              path="/signup"
+              element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignUp />}
+            />
+            <Route
+              path="/signin"
+              element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignIn />}
+            />
+
+            <Route path="/verify-signup" element={<VerifySignUp />} />
+            <Route path="/verify-forget-password" element={<VerifyForgetPassword />} />
           </Routes>
         )}
       </Router>

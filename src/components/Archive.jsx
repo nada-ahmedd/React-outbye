@@ -20,6 +20,8 @@ const Archive = () => {
   const [ratedOrders, setRatedOrders] = useState(new Set());
   const [submittedRatings, setSubmittedRatings] = useState({});
   const [submittedComments, setSubmittedComments] = useState({});
+  const [activeOrder, setActiveOrder] = useState(null);
+  const [ratingPopupOrder, setRatingPopupOrder] = useState(null);
 
   useEffect(() => {
     if (!isLoggedIn || !userId) {
@@ -32,6 +34,7 @@ const Archive = () => {
       return;
     }
 
+    // جلب البيانات المحفوظة من localStorage
     const savedRatings = JSON.parse(localStorage.getItem('ratings') || '{}');
     const savedComments = JSON.parse(localStorage.getItem('comments') || '{}');
     const savedRatedOrders = new Set(JSON.parse(localStorage.getItem('ratedOrders') || '[]'));
@@ -126,7 +129,31 @@ const Archive = () => {
       console.log("Archive Orders Response:", response);
 
       if (response.status === "success" && response.data && response.data.length > 0) {
-        setOrders(response.data);
+        const ordersData = response.data;
+        setOrders(ordersData);
+
+        // تحديث التقييمات بناءً على البيانات من السيرفر (لو كانت موجودة)
+        const ratedOrdersSet = new Set(ratedOrders);
+        const ratingsData = { ...submittedRatings };
+        const commentsData = { ...submittedComments };
+
+        ordersData.forEach((order) => {
+          // لو الـ API رجعت التقييم مع الأوردر
+          if (order.rating && order.comment !== undefined) {
+            ratedOrdersSet.add(order.orders_id);
+            ratingsData[order.orders_id] = order.rating;
+            commentsData[order.orders_id] = order.comment;
+          }
+        });
+
+        setRatedOrders(ratedOrdersSet);
+        setSubmittedRatings(ratingsData);
+        setSubmittedComments(commentsData);
+
+        // تحديث localStorage
+        localStorage.setItem('ratedOrders', JSON.stringify([...ratedOrdersSet]));
+        localStorage.setItem('ratings', JSON.stringify(ratingsData));
+        localStorage.setItem('comments', JSON.stringify(commentsData));
       } else {
         setOrders([]);
       }
@@ -170,32 +197,39 @@ const Archive = () => {
           text: 'Thank you for your feedback!',
         });
 
+        // تحديث الحالة
         setRatedOrders((prev) => {
           const newSet = new Set(prev).add(orderId);
           localStorage.setItem('ratedOrders', JSON.stringify([...newSet]));
           return newSet;
         });
+
         setSubmittedRatings((prev) => {
           const newRatings = { ...prev, [orderId]: rating };
           localStorage.setItem('ratings', JSON.stringify(newRatings));
           return newRatings;
         });
+
         setSubmittedComments((prev) => {
           const newComments = { ...prev, [orderId]: comment };
           localStorage.setItem('comments', JSON.stringify(newComments));
           return newComments;
         });
 
+        // إزالة البيانات المؤقتة بعد الإرسال
         setRatings((prev) => {
           const newRatings = { ...prev };
           delete newRatings[orderId];
           return newRatings;
         });
+
         setComments((prev) => {
           const newComments = { ...prev };
           delete newComments[orderId];
           return newComments;
         });
+
+        setRatingPopupOrder(null);
       } else {
         Swal.fire({
           icon: 'error',
@@ -227,6 +261,18 @@ const Archive = () => {
     }));
   };
 
+  const toggleDetails = (orderId) => {
+    setActiveOrder(activeOrder === orderId ? null : orderId);
+  };
+
+  const openRatingPopup = (orderId) => {
+    setRatingPopupOrder(orderId);
+  };
+
+  const closeRatingPopup = () => {
+    setRatingPopupOrder(null);
+  };
+
   return (
     <div className="archive-page">
       <div className="main-content">
@@ -241,101 +287,105 @@ const Archive = () => {
             ) : (
               orders.map((order, index) => (
                 <div key={index} className="archive-card">
-                  <div className="order-header">
-                    <h5>Order #{order.orders_id || 'N/A'}</h5>
+                  <div className="card-header">
+                    <div className="order-header" onClick={() => toggleDetails(order.orders_id)}>
+                      <h5>Order #{order.orders_id || 'N/A'}</h5>
+                      <span className="toggle-icon">{activeOrder === order.orders_id ? '−' : '+'}</span>
+                    </div>
                   </div>
-                  <div className="order-details">
+                  <div className={`order-details ${activeOrder === order.orders_id ? 'active' : ''}`}>
                     <p>
-                      <i className="fas fa-calendar"></i> <strong>Date:</strong>{' '}
+                      <i className="fas fa-calendar animate-icon"></i> <strong>Date:</strong>{' '}
                       {order.orders_datetime ? new Date(order.orders_datetime).toLocaleString('en-US') : 'N/A'}
                     </p>
                     <p>
-                      <i className="fas fa-map-marker-alt"></i> <strong>Address:</strong>{' '}
+                      <i className="fas fa-map-marker-alt animate-icon"></i> <strong>Address:</strong>{' '}
                       {order.address_city || 'N/A'}, {order.address_street || 'N/A'}
                     </p>
                     <p>
-                      <i className="fas fa-money-bill"></i> <strong>Price:</strong>{' '}
+                      <i className="fas fa-money-bill animate-icon"></i> <strong>Price:</strong>{' '}
                       {order.orders_price ? order.orders_price + ' EGP' : 'N/A'}
                     </p>
                     <p>
-                      <i className="fas fa-truck"></i> <strong>Delivery Fee:</strong>{' '}
+                      <i className="fas fa-truck animate-icon"></i> <strong>Delivery Fee:</strong>{' '}
                       {order.orders_pricedelivery ? order.orders_pricedelivery + ' EGP' : 'N/A'}
                     </p>
                     <p>
-                      <i className="fas fa-wallet"></i> <strong>Total:</strong>{' '}
+                      <i className="fas fa-wallet animate-icon"></i> <strong>Total:</strong>{' '}
                       {order.orders_totalprice ? order.orders_totalprice + ' EGP' : 'N/A'}
                     </p>
                   </div>
                   <div className="rating-section">
-                        <h6>Your Rating:</h6>
-                        {ratedOrders.has(order.orders_id) ? (
-                          <div className="submitted-rating">
-                            <div className="stars">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <span
-                                  key={star}
-                                  className={`star ${submittedRatings[order.orders_id] >= star ? 'filled' : ''}`}
-                                >
-                                  ★
-                                </span>
-                              ))}
-                            </div>
-                            {submittedComments[order.orders_id] && (
-                              <p className="submitted-comment">
-                                <strong>Comment:</strong> {submittedComments[order.orders_id]}
-                              </p>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="rating-input">
-                            <div className="stars">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <span
-                                  key={star}
-                                  className={`star ${ratings[order.orders_id] >= star ? 'filled' : ''}`}
-                                  onClick={() => handleRatingChange(order.orders_id, star)}
-                                >
-                                  ★
-                                </span>
-                              ))}
-                            </div>
-                            <textarea
-                              className="comment-input"
-                              placeholder="Add your comment (optional)"
-                              value={comments[order.orders_id] || ''}
-                              onChange={(e) => handleCommentChange(order.orders_id, e.target.value)}
-                            />
-                          </div>
+                    <h6>Your Feedback:</h6>
+                    {ratedOrders.has(order.orders_id) ? (
+                      <div className="submitted-rating">
+                        <div className="stars">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                              key={star}
+                              className={`star ${submittedRatings[order.orders_id] >= star ? 'filled' : ''}`}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                        {submittedComments[order.orders_id] && (
+                          <p className="submitted-comment">
+                            <strong>Comment:</strong> {submittedComments[order.orders_id]}
+                          </p>
                         )}
                       </div>
-                      <div className="order-actions">
-                        {ratedOrders.has(order.orders_id) ? (
-                          <button
-                            className="btn view-details"
-                            onClick={() => navigate(`/order-details?orderId=${order.orders_id}`)}
-                          >
-                            View Details
-                          </button>
-                        ) : (
-                          <>
-                            <button
-                              className="btn submit-rating"
-                              onClick={() => submitRating(order.orders_id)}
-                            >
-                              Submit Rating
-                            </button>
-                            <button
-                              className="btn view-details"
-                              onClick={() => navigate(`/order-details?orderId=${order.orders_id}`)}
-                            >
-                              View Details
-                            </button>
-                          </>
-                        )}
-                      </div>
+                    ) : (
+                      <button
+                        className="btn-share-thoughts"
+                        onClick={() => openRatingPopup(order.orders_id)}
+                      >
+                        <i className="fas fa-heart"></i> Share Your Thoughts
+                      </button>
+                    )}
+                  </div>
+                  <div className="order-actions">
+                    <button
+                      className="btn view-details"
+                      onClick={() => navigate(`/order-details?orderId=${order.orders_id}`)}
+                    >
+                      View Details
+                    </button>
+                  </div>
                 </div>
               ))
             )}
+          </div>
+        )}
+        {ratingPopupOrder && (
+          <div className="rating-popup">
+            <div className="rating-popup-content">
+              <button className="close-popup" onClick={closeRatingPopup}>×</button>
+              <h5>Share Your Thoughts on Order #{ratingPopupOrder}</h5>
+              <div className="stars">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={`star ${ratings[ratingPopupOrder] >= star ? 'filled' : ''}`}
+                    onClick={() => handleRatingChange(ratingPopupOrder, star)}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <textarea
+                className="comment-input"
+                placeholder="Add your comment (optional)"
+                value={comments[ratingPopupOrder] || ''}
+                onChange={(e) => handleCommentChange(ratingPopupOrder, e.target.value)}
+              />
+              <button
+                className="btn submit-rating"
+                onClick={() => submitRating(ratingPopupOrder)}
+              >
+                Submit Feedback
+              </button>
+            </div>
           </div>
         )}
         <button className="btn-refresh" onClick={loadArchiveOrders}>

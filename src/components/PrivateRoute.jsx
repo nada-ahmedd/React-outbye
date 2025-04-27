@@ -7,6 +7,12 @@ const PrivateRoute = ({ children }) => {
   const { isLoggedIn, tokenExpiresAt } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
+  // Check if user is not logged in
+  if (!isLoggedIn) {
+    return <Navigate to="/signin" />;
+  }
+
+  // Check if token has expired
   if (tokenExpiresAt && Date.now() > parseInt(tokenExpiresAt)) {
     Swal.fire({
       icon: 'info',
@@ -20,7 +26,7 @@ const PrivateRoute = ({ children }) => {
     return <Navigate to="/signin" />;
   }
 
-  return isLoggedIn ? children : <Navigate to="/signin" />;
+  return children;
 };
 
 export default PrivateRoute;

@@ -3,9 +3,7 @@ body {
   padding: 0;
   background: linear-gradient(135deg, #f5f7fa 0%, #ffe6d1 100%);
   font-family: 'Poppins', sans-serif;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
   overflow-x: hidden;
 }
 
