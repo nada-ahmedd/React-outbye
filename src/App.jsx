@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/index';
 import { useState, useEffect } from 'react';
@@ -25,7 +25,111 @@ import Archive from './components/Archive';
 import About from './components/About';
 import Contact from './components/Contact';
 import Loader from './components/Loader';
-import AllOffers from './components/AllOffers'; // إضافة الـ import لصفحة AllOffers
+import AllOffers from './components/AllOffers';
+
+// مكون جديد هيحتوي على الـ Routes وهيعمل scroll to top
+function ScrollToTopRoutes({ isLoggedIn, isAdminLoggedIn }) {
+  const location = useLocation(); // بنستخدم useLocation عشان نراقب تغيير الـ route
+
+  // كل ما يحصل تغيير في الـ route (location.pathname)، نعمل scroll لأعلى بسلاسة
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Smooth scrolling
+  }, [location.pathname]); // بنراقب أي تغيير في المسار (route)
+
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        {/* Public routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/services/:id" element={<Services />} />
+        <Route path="/items/:id" element={<Items />} />
+        <Route path="/item/:itemId" element={<ItemDetail />} />
+        <Route path="/all-offers" element={<AllOffers />} />
+
+        {/* Protected routes */}
+        <Route
+          path="/pending-orders"
+          element={
+            <PrivateRoute>
+              <PendingOrders />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/order-details"
+          element={
+            <PrivateRoute>
+              <OrderDetails />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/addresses"
+          element={
+            <PrivateRoute>
+              <Addresses />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/archive"
+          element={
+            <PrivateRoute>
+              <Archive />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <PrivateRoute>
+              <Favorites />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <PrivateRoute>
+              <Cart />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <PrivateRoute>
+              <Checkout />
+            </PrivateRoute>
+          }
+        />
+      </Route>
+
+      {/* Authentication routes */}
+      <Route
+        path="/signup"
+        element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignUp />}
+      />
+      <Route
+        path="/signin"
+        element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignIn />}
+      />
+
+      <Route path="/verify-signup" element={<VerifySignUp />} />
+      <Route path="/verify-forget-password" element={<VerifyForgetPassword />} />
+    </Routes>
+  );
+}
 
 function App() {
   const { isLoggedIn, isAdminLoggedIn } = useSelector((state) => state.auth);
@@ -46,97 +150,7 @@ function App() {
         {isLoading ? (
           <Loader />
         ) : (
-          <Routes>
-            <Route element={<Layout />}>
-              {/* Public routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/services/:id" element={<Services />} />
-              <Route path="/items/:id" element={<Items />} />
-              <Route path="/item/:itemId" element={<ItemDetail />} />
-              <Route path="/all-offers" element={<AllOffers />} /> {/* إضافة المسار الجديد لصفحة AllOffers */}
-
-              {/* Protected routes */}
-              <Route
-                path="/pending-orders"
-                element={
-                  <PrivateRoute>
-                    <PendingOrders />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/order-details"
-                element={
-                  <PrivateRoute>
-                    <OrderDetails />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/addresses"
-                element={
-                  <PrivateRoute>
-                    <Addresses />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <PrivateRoute>
-                    <Profile />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/archive"
-                element={
-                  <PrivateRoute>
-                    <Archive />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/favorites"
-                element={
-                  <PrivateRoute>
-                    <Favorites />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/cart"
-                element={
-                  <PrivateRoute>
-                    <Cart />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/checkout"
-                element={
-                  <PrivateRoute>
-                    <Checkout />
-                  </PrivateRoute>
-                }
-              />
-            </Route>
-
-            {/* Authentication routes */}
-            <Route
-              path="/signup"
-              element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignUp />}
-            />
-            <Route
-              path="/signin"
-              element={isLoggedIn || isAdminLoggedIn ? <Navigate to="/profile" /> : <SignIn />}
-            />
-
-            <Route path="/verify-signup" element={<VerifySignUp />} />
-            <Route path="/verify-forget-password" element={<VerifyForgetPassword />} />
-          </Routes>
+          <ScrollToTopRoutes isLoggedIn={isLoggedIn} isAdminLoggedIn={isAdminLoggedIn} /> // عدينا القيمتين كـ props
         )}
       </Router>
     </Provider>
