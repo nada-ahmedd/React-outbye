@@ -118,11 +118,15 @@ const Navbar = () => {
   const calculateTotalCount = () => {
     let totalCount = 0;
     if (cart.items && typeof cart.items === 'object') {
-      Object.values(cart.items).forEach((category) => {
-        if (category.datacart && Array.isArray(category.datacart)) {
-          category.datacart.forEach((item) => {
-            totalCount += parseInt(item.cart_quantity || 0);
-          });
+      // Loop through all categories in cart.items
+      Object.entries(cart.items).forEach(([key, category]) => {
+        // For offers (which is a direct array)
+        if (key === 'offers' && Array.isArray(category)) {
+          totalCount += category.reduce((sum, item) => sum + parseInt(item.cart_quantity || 0), 0);
+        }
+        // For other categories like rest_cafe, hotel_tourist, other_categories
+        else if (category.datacart && Array.isArray(category.datacart)) {
+          totalCount += category.datacart.reduce((sum, item) => sum + parseInt(item.cart_quantity || 0), 0);
         }
       });
     }

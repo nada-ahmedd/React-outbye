@@ -294,7 +294,7 @@ const Home = () => {
         });
         slides[index].classList.add('active');
         dots[index].classList.add('active');
-        const activeOffer = offers[index];
+        const activeOffer = offers.length > 4 && index === 4 ? null : offers[index];
         setActiveOfferId(activeOffer?.id || null);
         console.log('Active Offer ID updated:', activeOffer?.id || 'None');
       }
@@ -412,81 +412,80 @@ const Home = () => {
         </div>
       </div>
 
-  <section className="offers-section">
-  <h2 className="section-title">Special Offers</h2>
-  <div className="offers-carousel">
-    {offers.length > 0 ? (
-      offers.map((offer, index) => (
-        <div
-          className={`offers-carousel-item ${index === 0 ? 'active' : ''}`}
-          key={offer.id || `offer-${index}`}
-        >
-          <div className="offer-card">
-            <div className="offer-image-wrapper">
-              <img
-                src={offer.image || 'images/out bye.png'}
-                alt={offer.title || 'Offer'}
-                onError={(e) => (e.target.src = 'images/out bye.png')}
-                loading="lazy"
-              />
-            </div>
-            <div className="offer-details">
-              <p className="offer-restaurant">{offer.service_name || 'Unknown Restaurant'}</p>
-              <h3>{offer.title || 'Special Offer'}</h3>
-              <div className="offer-details-content">
-                <div className="offer-text">
-                  <p className="offer-description">{offer.description || 'Check Out This Deal'}</p>
-                  <p className="offer-price">{offer.price || 'N/A'} EGP</p>
-                  <button
-                    className="offer-add-to-cart"
-                    onClick={() => {
-                      console.log('Offer Add to Cart button clicked, Offer ID:', offer.id);
-                      handleAddToCart(offer.id, 'offer');
-                    }}
-                  >
-                    Add to Cart
-                  </button>
+      {offers.length > 0 && (
+        <section className="offers-section">
+          <h2 className="section-title">Special Offers</h2>
+          <div className="offers-carousel">
+            {offers.slice(0, 4).map((offer, index) => (
+              <div
+                className={`offers-carousel-item ${index === 0 ? 'active' : ''}`}
+                key={offer.id || `offer-${index}`}
+              >
+                <div className="offer-card">
+                  <div className="offer-image-wrapper">
+                    <img
+                      src={offer.image || 'images/out bye.png'}
+                      alt={offer.title || 'Offer'}
+                      onError={(e) => (e.target.src = 'images/out bye.png')}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="offer-details">
+                    <p className="offer-restaurant">{offer.service_name || 'Unknown Restaurant'}</p>
+                    <h3>{offer.title || 'Special Offer'}</h3>
+                    <div className="offer-details-content">
+                      <div className="offer-text">
+                        <p className="offer-description">{offer.description || 'Check Out This Deal'}</p>
+                        <p className="offer-price">{offer.price || 'N/A'} EGP</p>
+                        <button
+                          className="offer-add-to-cart"
+                          onClick={() => {
+                            console.log('Offer Add to Cart button clicked, Offer ID:', offer.id);
+                            handleAddToCart(offer.id, 'offer');
+                          }}
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      ))
-    ) : (
-      <div className="offers-carousel-item active">
-        <div className="offer-card">
-          <div className="offer-image-wrapper">
-            <img src="images/out bye.png" alt="Fallback" loading="lazy" />
-          </div>
-          <div className="offer-details">
-            <p className="offer-restaurant">No Restaurant</p>
-            <h3>No Offers Available</h3>
-            <div className="offer-details-content">
-              <div className="offer-text">
-                <p className="offer-description">Stay tuned for exciting deals!</p>
-                <button className="offer-add-to-cart" disabled>
-                  Add to Cart
-                </button>
+            ))}
+            {offers.length > 4 && (
+              <div
+                className={`offers-carousel-item`}
+                key="out-buy-card"
+              >
+                <div className="offer-card">
+                  <div className="offer-image-wrapper">
+                    <img
+                      src="images/out bye.png"
+                      alt="Out Buy"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="offer-details out-buy-details">
+                    <h3>More Offers Available!</h3>
+                    <p className="offer-description">Check out all our amazing offers.</p>
+                    <Link to="/all-offers" className="view-all-offers-btn">
+                      View All Offers
+                    </Link>
+                  </div>
+                </div>
               </div>
+            )}
+            <div className="offer-card-dots">
+              {[...Array(Math.min(offers.length, 4) + (offers.length > 4 ? 1 : 0))].map((_, index) => (
+                <span
+                  key={index}
+                  className={`offer-card-dot ${index === 0 ? 'active' : ''}`}
+                ></span>
+              ))}
             </div>
           </div>
-        </div>
-      </div>
-    )}
-    <div className="offer-card-dots">
-      {offers.length > 0 ? (
-        offers.map((_, index) => (
-          <span
-            key={index}
-            className={`offer-card-dot ${index === 0 ? 'active' : ''}`}
-          ></span>
-        ))
-      ) : (
-        <span className="offer-card-dot active"></span>
+        </section>
       )}
-    </div>
-  </div>
-</section>
 
       <section className="discount-section" ref={discountRef}>
         <h2 className="section-title">Our Discount</h2>

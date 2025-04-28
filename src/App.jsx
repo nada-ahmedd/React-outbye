@@ -25,6 +25,7 @@ import Archive from './components/Archive';
 import About from './components/About';
 import Contact from './components/Contact';
 import Loader from './components/Loader';
+import AllOffers from './components/AllOffers'; // إضافة الـ import لصفحة AllOffers
 
 function App() {
   const { isLoggedIn, isAdminLoggedIn } = useSelector((state) => state.auth);
@@ -54,6 +55,7 @@ function App() {
               <Route path="/services/:id" element={<Services />} />
               <Route path="/items/:id" element={<Items />} />
               <Route path="/item/:itemId" element={<ItemDetail />} />
+              <Route path="/all-offers" element={<AllOffers />} /> {/* إضافة المسار الجديد لصفحة AllOffers */}
 
               {/* Protected routes */}
               <Route

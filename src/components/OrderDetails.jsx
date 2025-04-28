@@ -64,7 +64,7 @@ const OrderDetails = () => {
           console.error('Unauthorized, clearing localStorage and redirecting');
           localStorage.clear();
           await Swal.fire({
-            icon: 'warning"',
+            icon: 'warning',
             title: 'Error',
             text: 'Unauthorized. Please log in again.',
           });
@@ -152,21 +152,20 @@ const OrderDetails = () => {
             items.map((item, index) => (
               <div key={index} className="item">
                 <img
-                  src={item.items_image || 'images/out bye.png'}
-                  alt={item.items_name}
+                  src={item.image || 'images/out bye.png'}
+                  alt={item.name}
                   onError={(e) => (e.target.src = 'images/out bye.png')}
                 />
                 <div className="item-info">
-                  <p><strong>Product Name:</strong> {item.items_name}</p>
-                  <p><strong>Price:</strong> {item.items_price} EGP</p>
+                  <p><strong>Product Name:</strong> {item.name}</p>
+                  <p><strong>Price:</strong> {item.itemsprice} EGP</p>
                   <p><strong>Quantity:</strong> {item.cart_quantity}</p>
-                  <p><strong>Description:</strong> {item.items_des}</p>
+                  <p><strong>Description:</strong> No description available</p>
                 </div>
               </div>
             ))
           )}
         </div>
-       
       </div>
     </div>
   );

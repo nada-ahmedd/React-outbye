@@ -224,76 +224,123 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6); /* خلفية أغمق */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(5px); /* تأثير blur للخلفية */
 }
 
 .rating-popup-content {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
+  background: linear-gradient(135deg, #fffaf0 0%, #ffffff 100%); /* خلفية متدرجة */
+  border-radius: 15px; /* زوايا دائرية أكتر */
+  padding: 25px;
   width: 90%;
-  max-width: 400px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  max-width: 450px; /* عرض أكبر ومريح */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* ظل أقوى */
   position: relative;
-  animation: popupFade 0.3s ease;
-  border: 1px solid #F26B0A;
+  animation: popupSlideIn 0.4s ease; /* animation جديدة للظهور */
+  border: 2px solid #F26B0A; /* حدود ملونة */
 }
 
-@keyframes popupFade {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+@keyframes popupSlideIn {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .close-popup {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
+  top: 15px;
+  right: 15px;
+  background: #f5f0e6;
   border: none;
-  font-size: 1.5rem;
-  color: #333333;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
 }
 
-.close-popup:hover {
+.close-popup i {
+  font-size: 1.2rem;
   color: #F26B0A;
 }
 
+.close-popup:hover {
+  background: #F26B0A;
+  transform: rotate(90deg);
+}
+
+.close-popup:hover i {
+  color: #ffffff;
+}
+
 .rating-popup-content h5 {
-  font-size: 1.2rem;
-  color: #333333;
-  margin: 0 0 15px;
+  font-size: 1.4rem;
+  color: #F26B0A;
+  margin: 0 0 20px;
   text-align: center;
   font-weight: 600;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.rating-popup-content h5::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 2px;
+  background: #F26B0A;
 }
 
 .stars {
   display: flex;
-  gap: 5px;
+  gap: 8px; /* زيادة المسافة بين النجوم */
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 15px;
 }
 
 .star {
-  font-size: 1.5rem;
+  font-size: 2rem; /* نجوم أكبر */
   color: #d3d3d3;
   cursor: pointer;
-  transition: color 0.3s ease, transform 0.3s ease;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .star.filled {
   color: #F26B0A;
+  animation: starPop 0.3s ease; /* تأثير لما تختاري نجمة */
 }
 
 .star:hover,
 .star.filled:hover {
   color: #ff6f61;
-  transform: scale(1.1);
+  transform: scale(1.2); /* تكبير النجمة لما تحطي الماوس عليها */
+}
+
+@keyframes starPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .submitted-rating {
@@ -317,22 +364,23 @@ body {
 
 .comment-input {
   width: 100%;
-  min-height: 80px;
-  padding: 10px;
-  border: 1px solid #f5f0e6;
-  border-radius: 5px;
-  font-size: 0.9rem;
+  min-height: 100px; /* ارتفاع أكبر */
+  padding: 12px;
+  border: 2px solid #f5f0e6;
+  border-radius: 8px;
+  font-size: 0.95rem;
   resize: vertical;
-  margin-bottom: 8px;
+  margin-bottom: 15px;
   font-family: 'Poppins', sans-serif;
   background: #fffaf0;
   color: #333333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .comment-input:focus {
   outline: none;
   border-color: #F26B0A;
-  box-shadow: 0 0 5px rgba(242, 107, 10, 0.3);
+  box-shadow: 0 0 8px rgba(242, 107, 10, 0.4); /* تأثير focus أقوى */
 }
 
 .order-actions {
@@ -351,11 +399,27 @@ body {
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-.submit-rating {
+.btn submit-rating {
   background: #F26B0A;
   color: white;
-  margin: 10px auto 0;
+  padding: 10px 20px; /* زيادة padding */
+  border-radius: 8px; /* زوايا دائرية أكتر */
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 15px auto 0;
   display: block;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn submit-rating:hover {
+  background: #ff6f61;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(242, 107, 10, 0.4);
+}
+
+.submit-rating:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(242, 107, 10, 0.2);
 }
 
 .view-details {
@@ -497,7 +561,7 @@ body {
 
   .comment-input {
     font-size: 0.85rem;
-    min-height: 60px;
+    min-height: 80px; /* تقليل الارتفاع */
   }
 
   .btn.submit-rating,
@@ -539,7 +603,7 @@ body {
 
   .comment-input {
     font-size: 0.8rem;
-    min-height: 50px;
+    min-height: 60px; /* تقليل الارتفاع */
   }
 
   .btn.submit-rating,
@@ -554,6 +618,24 @@ body {
 
   .rating-popup-content {
     width: 95%;
-    padding: 15px;
+    padding: 20px;
+  }
+
+  .rating-popup-content h5 {
+    font-size: 1.2rem;
+  }
+
+  .star {
+    font-size: 1.8rem;
+  }
+
+  .comment-input {
+    font-size: 0.9rem;
+    min-height: 80px;
+  }
+
+  .submit-rating {
+    font-size: 0.9rem;
+    padding: 8px 16px;
   }
 }

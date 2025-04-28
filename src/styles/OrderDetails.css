@@ -161,12 +161,18 @@
 
   .order-details-container .item {
     flex-direction: column !important;
-    align-items: flex-start !important;
+    align-items: center !important; /* توسيط العناصر داخل الكارد */
   }
 
   .order-details-container .item img {
-    margin-right: 0 !important;
     margin-bottom: 15px !important;
+    display: block !important; /* التأكد من أن الصورة تكون كـ block */
+    margin-left: auto !important; /* توسيط الصورة */
+    margin-right: auto !important; /* توسيط الصورة */
+  }
+
+  .order-details-container .item-info {
+    text-align: center !important; /* توسيط النص داخل item-info */
   }
 
   .order-details-container .order-actions {

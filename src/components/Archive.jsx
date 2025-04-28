@@ -17,9 +17,6 @@ const Archive = () => {
   const [loading, setLoading] = useState(true);
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
-  const [ratedOrders, setRatedOrders] = useState(new Set());
-  const [submittedRatings, setSubmittedRatings] = useState({});
-  const [submittedComments, setSubmittedComments] = useState({});
   const [activeOrder, setActiveOrder] = useState(null);
   const [ratingPopupOrder, setRatingPopupOrder] = useState(null);
 
@@ -33,15 +30,6 @@ const Archive = () => {
       }).then(() => navigate('/signin'));
       return;
     }
-
-    // جلب البيانات المحفوظة من localStorage
-    const savedRatings = JSON.parse(localStorage.getItem('ratings') || '{}');
-    const savedComments = JSON.parse(localStorage.getItem('comments') || '{}');
-    const savedRatedOrders = new Set(JSON.parse(localStorage.getItem('ratedOrders') || '[]'));
-
-    setSubmittedRatings(savedRatings);
-    setSubmittedComments(savedComments);
-    setRatedOrders(savedRatedOrders);
 
     loadArchiveOrders();
   }, [isLoggedIn, userId, navigate]);
@@ -129,31 +117,7 @@ const Archive = () => {
       console.log("Archive Orders Response:", response);
 
       if (response.status === "success" && response.data && response.data.length > 0) {
-        const ordersData = response.data;
-        setOrders(ordersData);
-
-        // تحديث التقييمات بناءً على البيانات من السيرفر (لو كانت موجودة)
-        const ratedOrdersSet = new Set(ratedOrders);
-        const ratingsData = { ...submittedRatings };
-        const commentsData = { ...submittedComments };
-
-        ordersData.forEach((order) => {
-          // لو الـ API رجعت التقييم مع الأوردر
-          if (order.rating && order.comment !== undefined) {
-            ratedOrdersSet.add(order.orders_id);
-            ratingsData[order.orders_id] = order.rating;
-            commentsData[order.orders_id] = order.comment;
-          }
-        });
-
-        setRatedOrders(ratedOrdersSet);
-        setSubmittedRatings(ratingsData);
-        setSubmittedComments(commentsData);
-
-        // تحديث localStorage
-        localStorage.setItem('ratedOrders', JSON.stringify([...ratedOrdersSet]));
-        localStorage.setItem('ratings', JSON.stringify(ratingsData));
-        localStorage.setItem('comments', JSON.stringify(commentsData));
+        setOrders(response.data);
       } else {
         setOrders([]);
       }
@@ -197,25 +161,6 @@ const Archive = () => {
           text: 'Thank you for your feedback!',
         });
 
-        // تحديث الحالة
-        setRatedOrders((prev) => {
-          const newSet = new Set(prev).add(orderId);
-          localStorage.setItem('ratedOrders', JSON.stringify([...newSet]));
-          return newSet;
-        });
-
-        setSubmittedRatings((prev) => {
-          const newRatings = { ...prev, [orderId]: rating };
-          localStorage.setItem('ratings', JSON.stringify(newRatings));
-          return newRatings;
-        });
-
-        setSubmittedComments((prev) => {
-          const newComments = { ...prev, [orderId]: comment };
-          localStorage.setItem('comments', JSON.stringify(newComments));
-          return newComments;
-        });
-
         // إزالة البيانات المؤقتة بعد الإرسال
         setRatings((prev) => {
           const newRatings = { ...prev };
@@ -230,6 +175,9 @@ const Archive = () => {
         });
 
         setRatingPopupOrder(null);
+
+        // إعادة تحميل الأوردرات لتحديث التقييم من الـ API
+        await loadArchiveOrders();
       } else {
         Swal.fire({
           icon: 'error',
@@ -289,8 +237,10 @@ const Archive = () => {
                 <div key={index} className="archive-card">
                   <div className="card-header">
                     <div className="order-header" onClick={() => toggleDetails(order.orders_id)}>
-                      <h5>Order #{order.orders_id || 'N/A'}</h5>
-                      <span className="toggle-icon">{activeOrder === order.orders_id ? '−' : '+'}</span>
+                      <h5>Delivery Summary</h5>
+                      <span className="toggle-icon">
+                        <i className={`fas ${activeOrder === order.orders_id ? 'fa-caret-up' : 'fa-caret-down'}`}></i>
+                      </span>
                     </div>
                   </div>
                   <div className={`order-details ${activeOrder === order.orders_id ? 'active' : ''}`}>
@@ -317,21 +267,21 @@ const Archive = () => {
                   </div>
                   <div className="rating-section">
                     <h6>Your Feedback:</h6>
-                    {ratedOrders.has(order.orders_id) ? (
+                    {parseInt(order.orders_rating) > 0 ? (
                       <div className="submitted-rating">
                         <div className="stars">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <span
                               key={star}
-                              className={`star ${submittedRatings[order.orders_id] >= star ? 'filled' : ''}`}
+                              className={`star ${parseInt(order.orders_rating) >= star ? 'filled' : ''}`}
                             >
                               ★
                             </span>
                           ))}
                         </div>
-                        {submittedComments[order.orders_id] && (
+                        {order.orders_noterating && (
                           <p className="submitted-comment">
-                            <strong>Comment:</strong> {submittedComments[order.orders_id]}
+                            <strong>Comment:</strong> {order.orders_noterating}
                           </p>
                         )}
                       </div>
@@ -360,8 +310,10 @@ const Archive = () => {
         {ratingPopupOrder && (
           <div className="rating-popup">
             <div className="rating-popup-content">
-              <button className="close-popup" onClick={closeRatingPopup}>×</button>
-              <h5>Share Your Thoughts on Order #{ratingPopupOrder}</h5>
+              <button className="close-popup" onClick={closeRatingPopup}>
+                <i className="fas fa-times"></i>
+              </button>
+              <h5>Share Your Thoughts</h5>
               <div className="stars">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <span
