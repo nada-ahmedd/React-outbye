@@ -11,7 +11,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-top: 70px; /* ارتفاع الـ Navbar في الوضع الطبيعي */
+  padding-top: 70px;
 }
 
 main {
@@ -24,7 +24,7 @@ footer {
 
 /* Navbar Styles */
 .navbar {
-  position: fixed !important; /* التغلب على Bootstrap */
+  position: fixed !important;
   top: 0;
   left: 0;
   width: 100%;
@@ -35,11 +35,9 @@ footer {
   align-items: center;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid #F26B0A;
-  will-change: transform;
   z-index: 1000 !important;
 }
 
-/* التأكد من إن Bootstrap ما يأثرش على الـ position */
 .navbar-expand-lg {
   position: fixed !important;
   top: 0;
@@ -170,12 +168,14 @@ footer {
   border-radius: 15px;
 }
 
-.navbar .cart-icon {
+.navbar .cart-icon,
+.navbar .notification-icon {
   background: none !important;
   border: none !important;
 }
 
-.navbar .cart-count {
+.navbar .cart-count,
+.navbar .notification-count {
   position: absolute;
   top: 0;
   right: 0;
@@ -378,9 +378,140 @@ footer {
   background-image: url("data:image/svg+xml;charset=UTF8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
+/* Notification Icon and Count */
+.navbar .notification-icon {
+  position: relative;
+}
+
+.navbar .notification-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #F26B0A;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar .notification-icon.vibrate {
+  animation: vibrate 0.5s ease;
+}
+
+@keyframes vibrate {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(15deg); }
+  20% { transform: rotate(-15deg); }
+  30% { transform: rotate(15deg); }
+  40% { transform: rotate(-15deg); }
+  50% { transform: rotate(0deg); }
+}
+
+/* Notification Toasts */
+.notification-toasts {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+}
+
+.notification-toast {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideIn 0.5s ease forwards;
+  border-left: 5px solid;
+}
+
+.notification-toast.success {
+  border-left-color: #28a745;
+}
+
+.notification-toast.error {
+  border-left-color: #dc3545;
+}
+
+.notification-toast .toast-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification-toast .toast-content i {
+  font-size: 1.5rem;
+}
+
+.notification-toast .toast-content i.fa-check-circle {
+  color: #28a745;
+}
+
+.notification-toast .toast-content i.fa-exclamation-circle {
+  color: #dc3545;
+}
+
+.notification-toast .toast-content div {
+  flex: 1;
+}
+
+.notification-toast strong {
+  display: block;
+  font-size: 1rem;
+  color: #333;
+}
+
+.notification-toast p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.notification-toast small {
+  display: block;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.notification-toast .toast-close-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #999;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.notification-toast .toast-close-btn:hover {
+  color: #333;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 991px) {
   body {
-    padding-top: 60px; /* حافظي على الـ padding-top عشان المحتوى ما يتراكمش */
+    padding-top: 60px;
   }
 
   .navbar {
@@ -400,10 +531,6 @@ footer {
 
   .navbar .navbar-toggler {
     display: block;
-  }
-
-  .navbar .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml;charset=UTF8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
   }
 
   .navbar .navbar-collapse {
@@ -471,7 +598,8 @@ footer {
     font-size: 1.3rem;
   }
 
-  .navbar .cart-count {
+  .navbar .cart-count,
+  .navbar .notification-count {
     width: 16px;
     height: 16px;
     font-size: 0.7rem;
@@ -520,6 +648,33 @@ footer {
     padding: 0.5rem;
     justify-content: center;
     background-color: #000 !important;
+  }
+
+  .notification-toasts {
+    top: 70px;
+    right: 10px;
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .notification-toast {
+    padding: 10px;
+  }
+
+  .notification-toast .toast-content i {
+    font-size: 1.2rem;
+  }
+
+  .notification-toast strong {
+    font-size: 0.9rem;
+  }
+
+  .notification-toast p {
+    font-size: 0.8rem;
+  }
+
+  .notification-toast small {
+    font-size: 0.7rem;
   }
 }
 

@@ -25,6 +25,10 @@ const Home = () => {
   const [activeOfferId, setActiveOfferId] = useState(null);
   const discountRef = useRef(null);
   const topSellingRef = useRef(null);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [serviceType, setServiceType] = useState('');
+  const [showFeedbackFields, setShowFeedbackFields] = useState(false);
 
   const fetchWithToken = async (url, options = {}) => {
     const token = localStorage.getItem('token');
@@ -231,6 +235,70 @@ const Home = () => {
         title: "Error",
         text: `Failed to ${isFavorited ? 'remove' : 'add'} item: ${error}`,
       });
+    }
+  };
+
+  const handleStarClick = (index) => setRating(index + 1);
+
+  const submitFeedback = async () => {
+    if (rating === 0) {
+      Swal.fire({ icon: 'error', text: 'Please provide a rating before submitting.' });
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        Swal.fire({ icon: 'error', text: 'No authentication token found. Please log in again.' });
+        return;
+      }
+
+      const formData = new URLSearchParams({
+        user_id: userId,
+        rating,
+        comment,
+        service_type: serviceType || '',
+      });
+
+      const response = await fetch('https://abdulrahmanantar.com/outbye/user_review/add_review.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData.toString(),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          Swal.fire({ icon: 'error', text: 'Please log in again.' });
+          return;
+        }
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const text = await response.text();
+      const jsonMatch = text.match(/{.*}/s);
+      let data = { success: false, message: 'Invalid response' };
+      if (jsonMatch) {
+        try {
+          data = JSON.parse(jsonMatch[0]);
+        } catch (parseError) {
+          console.warn('Failed to parse JSON:', parseError.message);
+        }
+      }
+
+      if (data.success) {
+        Swal.fire({ icon: 'success', text: data.message });
+        setRating(0);
+        setComment('');
+        setServiceType('');
+        setShowFeedbackFields(false);
+      } else {
+        Swal.fire({ icon: 'error', text: data.message || 'Failed to submit review' });
+      }
+    } catch (error) {
+      Swal.fire({ icon: 'error', text: 'An error occurred while submitting the review' });
     }
   };
 
@@ -599,6 +667,51 @@ const Home = () => {
           <p>No top selling items available.</p>
         )}
       </section>
+
+      {userId && (
+        <section className="feedback-section">
+          <h2 className="section-title">
+            <i className="fas fa-star feedback-icon star-pulse"></i> Share Your Feedback
+          </h2>
+          <div className="feedback-container review-card">
+            <p className="feedback-instruction">Please rate your experience</p>
+            <div className="stars">
+              {[...Array(5)].map((_, index) => (
+                <i
+                  key={index}
+                  className={`fas fa-star ${index < rating ? 'active' : ''} cursor-pointer star-icon`}
+                  onClick={() => handleStarClick(index)}
+                />
+              ))}
+            </div>
+            {showFeedbackFields ? (
+              <div className="feedback-fields">
+                <input
+                  type="text"
+                  placeholder="Service Type (Optional)"
+                  value={serviceType}
+                  onChange={(e) => setServiceType(e.target.value)}
+                  className="feedback-input"
+                />
+                <textarea
+                  placeholder="Write your comment here..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  rows="4"
+                  className="feedback-textarea"
+                />
+                <button onClick={submitFeedback} className="submit-btn">
+                  <i className="fas fa-check-circle btn-icon"></i> Submit Feedback
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => setShowFeedbackFields(true)} className="add-comment-btn">
+                <i className="fas fa-comment-dots btn-icon"></i> Add Comment
+              </button>
+            )}
+          </div>
+        </section>
+      )}
     </>
   );
 };

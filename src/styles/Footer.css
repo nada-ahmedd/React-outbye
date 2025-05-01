@@ -29,6 +29,21 @@
   z-index: 1;
 }
 
+/* Make columns spacing consistent */
+.site-footer .row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.site-footer .col-lg-2 {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.site-footer .col-lg-2:last-child {
+  margin-right: 0;
+}
+
 .footer-logo-img {
   width: 120px;
   height: auto;
@@ -98,37 +113,40 @@
 .site-footer .input-group {
   display: flex;
   align-items: center;
-  gap: 10px; /* مسافة بين الـ input والـ button */
+  border-radius: 25px;
+  overflow: hidden;
+  max-width: 250px;
 }
 
 .site-footer input {
   background: #fff;
-  border: 2px solid #F26B0A;
-  border-radius: 25px;
-  padding: 12px 20px;
+  border: none;
+  border-radius: 0;
+  padding: 12px 25px;
   font-size: 0.95rem;
   color: #333;
-  flex-grow: 1; /* الـ input ياخد المساحة المتبقية */
-  width: auto; /* شيلنا width: 100% علشان ما ياخدش العرض كامل */
-  transition: border-color 0.3s ease;
+  flex-grow: 1;
+  height: 48px;
+  min-width: 60px;
+  margin-top: 33px;
 }
 
 .site-footer input:focus {
-  border-color: #ff5e62;
   outline: none;
-  box-shadow: 0 0 5px rgba(242, 107, 10, 0.3);
+  box-shadow: none;
 }
 
 .site-footer .btn.submit {
   background: linear-gradient(90deg, #F26B0A, #ff5e62);
   border: none;
-  border-radius: 25px;
-  padding: 12px 20px; /* نفس الـ padding بتاع الـ input علشان يكونوا متساويين في الارتفاع */
+  border-radius: 0;
+  padding: 12px 30px;
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
   transition: transform 0.3s ease;
-  flex-shrink: 0; /* الـ button ما يتقلصش */
+  flex-shrink: 0;
+  height: 48px;
 }
 
 .site-footer .btn.submit:hover {
@@ -151,6 +169,50 @@
   margin-top: 40px;
   color: #ccc;
   font-size: 0.9rem;
+}
+
+/* Rate Our Service Column */
+.rate-service-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Rate Our Service Button */
+.rate-service-btn {
+  padding: 12px 24px;
+  background: linear-gradient(90deg, #F26B0A, #ff5e62);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(242, 107, 10, 0.3);
+}
+
+.rate-service-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(242, 107, 10, 0.5);
+  background: linear-gradient(90deg, #ff5e62, #F26B0A);
+}
+
+.rate-service-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.rate-service-btn:hover::before {
+  left: 100%;
 }
 
 @media (max-width: 768px) {
@@ -177,13 +239,29 @@
   .site-footer input {
     padding: 10px 15px;
     font-size: 0.9rem;
+    height: 40px;
   }
 
   .site-footer .btn.submit {
     padding: 10px 15px;
+    height: 40px;
   }
 
   .footer-bottom {
     font-size: 0.85rem;
+  }
+
+  .rate-service-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  .rate-service-col {
+    justify-content: center;
+  }
+
+  .site-footer .col-lg-2 {
+    margin-right: 0;
+    margin-bottom: 20px;
   }
 }

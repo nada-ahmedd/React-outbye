@@ -1,7 +1,9 @@
+// src/components/PendingOrders.js
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import FeedbackPopup from './FeedbackPopup';
 import '../styles/PendingOrders.css';
 
 const API_BASE_URL = "https://abdulrahmanantar.com/outbye/";
@@ -12,9 +14,12 @@ const ENDPOINTS = {
 
 const PendingOrders = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { userId, isLoggedIn } = useSelector((state) => state.auth);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackOrderId, setFeedbackOrderId] = useState(null);
 
   useEffect(() => {
     if (!isLoggedIn || !userId) {
@@ -28,7 +33,16 @@ const PendingOrders = () => {
     }
 
     loadPendingOrders();
-  }, [isLoggedIn, userId, navigate]);
+
+    // Check URL for order status change
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get('orderId');
+    const status = params.get('status');
+    if (orderId && (status === 'approved' || status === 'rejected')) {
+      setFeedbackOrderId(orderId);
+      setShowFeedback(true);
+    }
+  }, [isLoggedIn, userId, navigate, location]);
 
   const fetchWithToken = async (url, options = {}) => {
     try {
@@ -105,7 +119,6 @@ const PendingOrders = () => {
         body: new URLSearchParams({ userid: userId }).toString(),
       });
       if (response.status === 'success' && response.data) {
-        // فلترة الطلبات لعرض اللي حالتها "0" فقط (Processing)
         const pendingOrders = response.data.filter(order => order.orders_status === '0');
         setOrders(pendingOrders);
       } else {
@@ -138,7 +151,6 @@ const PendingOrders = () => {
           text: 'Order deleted successfully!',
           confirmButtonText: 'OK',
         });
-        // إعادة تحميل الطلبات بعد الحذف
         setOrders(orders.filter(order => order.orders_id !== orderId));
       } else {
         Swal.fire({
@@ -185,6 +197,13 @@ const PendingOrders = () => {
             </div>
           </div>
         ))
+      )}
+      {showFeedback && feedbackOrderId && (
+        <FeedbackPopup
+          orderId={feedbackOrderId}
+          userId={userId}
+          onClose={() => setShowFeedback(false)}
+        />
       )}
     </div>
   );

@@ -31,7 +31,6 @@ const Cart = () => {
   }, [dispatch, userId, isLoggedIn, navigate]);
 
   const handleIncrease = (itemId) => {
-    // Check if the item is an offer
     const isOffer = items.offers.some(item => item.cart_itemsid === itemId);
     const type = isOffer ? 'offer' : 'item';
     
@@ -39,7 +38,6 @@ const Cart = () => {
   };
 
   const handleDecrease = (itemId) => {
-    // Check if the item is an offer
     const isOffer = items.offers.some(item => item.cart_itemsid === itemId);
     const type = isOffer ? 'offer' : 'item';
     
@@ -96,7 +94,6 @@ const Cart = () => {
 
   const calculateTotalPrice = () => {
     let total = 0;
-    // Other categories
     const categories = [items.rest_cafe, items.hotel_tourist, ...(items.other_categories || [])];
     categories.forEach(category => {
       if (category?.datacart) {
@@ -109,7 +106,6 @@ const Cart = () => {
         });
       }
     });
-    // Offers
     if (items.offers?.length > 0) {
       items.offers.forEach(item => {
         const originalPrice = parseFloat(item.price) || 0;
@@ -125,14 +121,12 @@ const Cart = () => {
 
   const calculateTotalCount = () => {
     let count = 0;
-    // Other categories
     const categories = [items.rest_cafe, items.hotel_tourist, ...(items.other_categories || [])];
     categories.forEach(category => {
       if (category?.datacart) {
         count += category.datacart.reduce((sum, item) => sum + (parseInt(item.cart_quantity) || 0), 0);
       }
     });
-    // Offers
     if (items.offers?.length > 0) {
       count += items.offers.reduce((sum, item) => sum + (parseInt(item.cart_quantity) || 0), 0);
     }
@@ -148,42 +142,41 @@ const Cart = () => {
 
     return (
       <tr key={item.cart_id} id={`cart-item-${item.cart_id}`} data-price={originalPrice} data-discount={discount}>
-        <td>
-          <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+        <td data-label="Image">
+          <img src={item.image} alt={item.name} className="cart-item-image" />
         </td>
-        <td>{item.name}</td>
-        <td>
+        <td data-label="Product Name">{item.name}</td>
+        <td data-label="Price">
           {discount > 0 ? (
             <>
-              <span className="original-price text-muted text-decoration-line-through me-2">{originalPrice} EGP</span>
-              <span className="discounted-price text-success">{discountedPrice.toFixed(2)} EGP</span>
+              <span className="original-price">{originalPrice} EGP</span>
+              <span className="discounted-price">{discountedPrice.toFixed(2)} EGP</span>
             </>
           ) : (
             <span>{originalPrice} EGP</span>
           )}
         </td>
-        <td className="d-flex align-items-center gap-2">
-          <button className="btn btn-danger btn-sm decrease-item-btn" onClick={() => handleDecrease(item.cart_itemsid)}>
+        <td data-label="Quantity" className="quantity-controls">
+          <button className="decrease-btn" onClick={() => handleDecrease(item.cart_itemsid)}>
             <i className="fas fa-minus"></i>
           </button>
-          <span id={`quantity-${item.cart_itemsid}`} className="fs-5 fw-bold">{quantity}</span>
-          <button className="btn btn-success btn-sm increase-item-btn" onClick={() => handleIncrease(item.cart_itemsid)}>
+          <span id={`quantity-${item.cart_itemsid}`} className="quantity">{quantity}</span>
+          <button className="increase-btn" onClick={() => handleIncrease(item.cart_itemsid)}>
             <i className="fas fa-plus"></i>
           </button>
         </td>
-        <td id={`total-${item.cart_itemsid}`}>{totalPriceAfterDiscount.toFixed(2)} EGP</td>
+        <td data-label="Total" id={`total-${item.cart_itemsid}`}>{totalPriceAfterDiscount.toFixed(2)} EGP</td>
       </tr>
     );
   };
 
   const renderCartItems = () => {
-    if (status === 'loading') return <tr><td colSpan="5">Loading...</td></tr>;
-    if (status === 'failed') return <tr><td colSpan="5">⚠️ Error fetching data: {error}</td></tr>;
+    if (status === 'loading') return <tr><td colSpan="5" className="loading-text">Loading...</td></tr>;
+    if (status === 'failed') return <tr><td colSpan="5" className="error-text">⚠️ Error fetching data: {error}</td></tr>;
 
     let cartHTML = [];
     let hasItems = false;
 
-    // Restaurants & Cafes
     if (items.rest_cafe?.datacart?.length > 0) {
       hasItems = true;
       cartHTML.push(
@@ -194,7 +187,6 @@ const Cart = () => {
       );
     }
 
-    // Hotels & Tourist Places
     if (items.hotel_tourist?.datacart?.length > 0) {
       hasItems = true;
       cartHTML.push(
@@ -205,7 +197,6 @@ const Cart = () => {
       );
     }
 
-    // Offers
     if (items.offers?.length > 0) {
       hasItems = true;
       cartHTML.push(
@@ -216,7 +207,6 @@ const Cart = () => {
       );
     }
 
-    // Other Categories
     if (items.other_categories && Object.keys(items.other_categories).length > 0) {
       Object.values(items.other_categories).forEach(category => {
         if (category.datacart?.length > 0) {
@@ -237,6 +227,7 @@ const Cart = () => {
 
   return (
     <div className="cart-container">
+      <h2 className="cart-title">Your Cart</h2>
       <table className="cart-table">
         <thead>
           <tr>
@@ -250,8 +241,8 @@ const Cart = () => {
         <tbody id="cart-items">{renderCartItems()}</tbody>
       </table>
       <div className="cart-actions">
-        <a href="/" className="btn btn-primary">Continue Shopping</a>
-        <button className="btn btn-success" onClick={handleCheckout}>Checkout</button>
+        <a href="/" className="continue-shopping-btn">Continue Shopping</a>
+        <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
       </div>
       <div className="cart-footer">
         <div className="coupon">
@@ -262,17 +253,18 @@ const Cart = () => {
             value={couponInput}
             onChange={(e) => setCouponInput(e.target.value)}
             disabled={isCouponApplied}
+            className="coupon-input"
           />
           <button
-            className="btn"
+            className="apply-coupon-btn"
             onClick={handleApplyCoupon}
             disabled={isCouponApplied}
           >
-            Apply
+            Apply Coupon
           </button>
         </div>
         <div className="cart-total">
-          <h4>Cart Total</h4>
+          <h4>Cart Summary</h4>
           <p>Number of Items: <span id="cart-count">{calculateTotalCount()}</span></p>
           <p>Total: <span id="total-price">{calculateTotalPrice()} EGP</span></p>
           {couponDiscount > 0 && (

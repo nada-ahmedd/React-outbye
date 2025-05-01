@@ -790,3 +790,250 @@ body {
     font-size: 10px;
   }
 }
+/* Feedback Section */
+.feedback-section {
+  width: 85%;
+  margin: 40px auto;
+  padding: 40px 0;
+  position: relative;
+  min-height: 200px;
+  background: transparent; /* بدون باكجراوند */
+}
+
+.section-title {
+  text-align: center;
+  color: #333; /* لون أسود ناعم */
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.feedback-icon.star-pulse {
+  color: #F26B0A; /* أزرق ناعم */
+  font-size: 24px;
+  animation: starPulse 1.5s infinite;
+}
+
+@keyframes starPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.feedback-container.review-card {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px;
+  background: #FFFFFF; /* أبيض نقي */
+  border-radius: 20px 40px 20px 40px; /* حدود دائرية غير منتظمة */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px #F26B0A; /* ظل 3D مع حدود أزرق */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feedback-container.review-card:hover {
+  transform: translateY(-5px); /* يرتفع لفوق عند الـ hover */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 0 0 2px #F26B0A;
+}
+
+.feedback-container.review-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, #F26B0A, #F26B0A); /* تدرج أزرق */
+}
+
+.feedback-instruction {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  color: #555; /* رمادي ناعم */
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.stars {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.star-icon {
+  font-size: 28px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.stars .fa-star {
+  color: #D3D3D3; /* رمادي فاتح للنجوم غير المختارة */
+}
+
+.stars .fa-star.active {
+  color: #F26B0A; /* أزرق ناعم */
+  transform: scale(1.2);
+}
+
+.stars .fa-star:hover {
+  color: #F26B0A; /* أزرق أفتح عند الـ hover */
+  transform: scale(1.2);
+}
+
+.feedback-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.feedback-input,
+.feedback-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #E0E0E0; /* حدود رمادي فاتح */
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  color: #333;
+  background: #F7F7F7; /* رمادي فاتح جدًا */
+  transition: border-color 0.3s ease;
+}
+
+.feedback-input:focus,
+.feedback-textarea:focus {
+  border-color: #F26B0A; /* أزرق ناعم عند الـ focus */
+  outline: none;
+}
+
+.feedback-input::placeholder,
+.feedback-textarea::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.feedback-textarea {
+  resize: none;
+  height: 100px;
+}
+
+.add-comment-btn,
+.submit-btn {
+  background: #F26B0A; /* أزرق ناعم */
+  color: #FFFFFF;
+  padding: 12px 25px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.add-comment-btn:hover,
+.submit-btn:hover {
+  background: #F26B0A; /* أزرق أفتح عند الـ hover */
+  transform: translateY(-2px);
+}
+
+.btn-icon {
+  font-size: 18px;
+}
+
+/* Responsive Design for Feedback Section */
+@media (max-width: 768px) {
+  .feedback-section {
+    width: 90%;
+    padding: 30px 0;
+  }
+
+  .feedback-container.review-card {
+    max-width: 90%;
+    padding: 20px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  .feedback-instruction {
+    font-size: 1rem;
+  }
+
+  .star-icon {
+    font-size: 24px;
+  }
+
+  .feedback-input,
+  .feedback-textarea {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .add-comment-btn,
+  .submit-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .btn-icon {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .feedback-section {
+    width: 95%;
+    padding: 20px 0;
+  }
+
+  .feedback-container.review-card {
+    padding: 15px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+
+  .feedback-instruction {
+    font-size: 0.9rem;
+  }
+
+  .star-icon {
+    font-size: 20px;
+  }
+
+  .feedback-input,
+  .feedback-textarea {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .feedback-textarea {
+    height: 80px;
+  }
+
+  .add-comment-btn,
+  .submit-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .btn-icon {
+    font-size: 14px;
+  }
+}
