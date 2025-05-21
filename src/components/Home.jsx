@@ -25,6 +25,7 @@ const Home = () => {
   const [activeOfferId, setActiveOfferId] = useState(null);
   const discountRef = useRef(null);
   const topSellingRef = useRef(null);
+  // Added from old code: Feedback-related states
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [serviceType, setServiceType] = useState('');
@@ -32,27 +33,68 @@ const Home = () => {
 
   const fetchWithToken = async (url, options = {}) => {
     const token = localStorage.getItem('token');
-    const excludedAPIs = ["categories.php", "topselling.php", "services.php", "items.php", "search.php"];
+    const excludedAPIs = ["categories.php", "topselling.php", "services.php", "items.php", "search.php", "home.php"];
     const isExcluded = excludedAPIs.some(api => url.includes(api));
     options.headers = {
       ...options.headers,
       ...(isExcluded ? {} : { 'Authorization': `Bearer ${token}` }),
-      "Content-Type": options.headers?.["Content-Type"] || "application/x-www-form-urlencoded"
+      "Content-Type": "application/json"
     };
-    const response = await fetch(url, options);
-    const text = await response.text();
-    let data = { status: "success" };
     try {
-      const jsonStart = text.indexOf("{");
-      const jsonEnd = text.lastIndexOf("}") + 1;
-      if (jsonStart !== -1 && jsonEnd > 0) {
-        const jsonText = text.substring(jsonStart, jsonEnd);
-        data = JSON.parse(jsonText);
+      const response = await fetch(url, options);
+      let text = await response.text();
+      console.log('Raw Response:', text);
+      const jsonMatch = text.match(/{.*}/s);
+      if (jsonMatch) {
+        text = jsonMatch[0];
+      } else {
+        text = '{}';
       }
-    } catch (e) {
-      console.error('Error parsing JSON:', e);
+      try {
+        const data = JSON.parse(text);
+        return data.status ? data : { status: "success", ...data };
+      } catch (e) {
+        console.error('Error parsing JSON:', e, 'Raw response:', text);
+        return { status: "error", message: "Invalid JSON response" };
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      return { status: "error", message: error.message };
     }
-    return data;
+  };
+
+  const fetchWithTokenForDiscount = async (url, options = {}) => {
+    const token = localStorage.getItem('token');
+    const excludedAPIs = ["categories.php", "topselling.php", "services.php", "items.php", "search.php", "home.php"];
+    const isExcluded = excludedAPIs.some(api => url.includes(api));
+    options.headers = {
+      ...options.headers,
+      ...(isExcluded ? {} : { 'Authorization': `Bearer ${token}` }),
+      "Content-Type": "application/json"
+    };
+    try {
+      const response = await fetch(url, options);
+      let text = await response.text();
+      console.log('Raw Response:', text);
+      const parts = text.split('}{').map((part, index, array) => {
+        if (index === 0) return part + '}';
+        if (index === array.length - 1) return '{' + part;
+        return '{' + part + '}';
+      });
+      const data = [];
+      for (const part of parts) {
+        try {
+          const parsed = JSON.parse(part);
+          data.push(parsed);
+        } catch (e) {
+          console.error('Error parsing JSON part:', e, 'Part:', part);
+        }
+      }
+      return data.length > 0 ? data : { status: "error", message: "Invalid JSON response" };
+    } catch (error) {
+      console.error('Fetch error:', error);
+      return { status: "error", message: error.message };
+    }
   };
 
   const fetchOffersData = async (url) => {
@@ -60,17 +102,14 @@ const Home = () => {
       const response = await fetch(url);
       const text = await response.text();
       console.log('Raw Response from', url, ':', text);
-
       const trimmedText = text.trim();
       const jsonMatch = trimmedText.match(/\[.*\]/s);
       if (!jsonMatch) {
         console.error('No valid JSON array found in response:', trimmedText);
         return [];
       }
-
       const jsonText = jsonMatch[0];
       console.log('Extracted JSON:', jsonText);
-
       try {
         const parsedData = JSON.parse(jsonText);
         console.log('Parsed Offers Data:', parsedData);
@@ -105,31 +144,70 @@ const Home = () => {
   };
 
   const fetchCategories = async () => {
-    const apiUrl = "https://abdulrahmanantar.com/outbye/home.php";
+    const apiUrl = "https://abdulrahmanantar.com/outbye/categories/categories.php";
     try {
       const data = await fetchWithToken(apiUrl);
-      if (data.status === "success" && data.categories && Array.isArray(data.categories.data)) {
-        setCategories(data.categories.data);
-        const discountedItems = data.items.data.filter(item => item.items_discount).slice(0, 10);
-        setDiscountItems(discountedItems);
+      if (data.status === "success" && Array.isArray(data.data)) {
+        setCategories(data.data.filter(category => category.is_deleted === "0"));
       } else {
         setCategories([]);
-        setDiscountItems([]);
         Swal.fire({
           icon: 'error',
           title: 'Failed to Load Data',
-          text: 'Unable to load categories or discount items.',
+          text: 'Unable to load categories.',
         });
       }
     } catch (error) {
-      console.error('Error fetching home data:', error);
+      console.error('Error fetching categories:', error);
+      setCategories([]);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'An error occurred while fetching data.',
+        text: 'An error occurred while fetching categories.',
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDiscountItems = async () => {
+    const apiUrl = "https://abdulrahmanantar.com/outbye/home.php";
+    try {
+      const data = await fetchWithTokenForDiscount(apiUrl);
+      const itemsData = data.find(obj => obj.items && obj.items.data);
+      if (itemsData && itemsData.items.status === "success" && Array.isArray(itemsData.items.data)) {
+        const discountedItems = itemsData.items.data
+          .filter(item => 
+            item.items_discount && 
+            parseFloat(item.items_discount) > 0 && 
+            parseFloat(item.items_discount) < parseFloat(item.items_price) && 
+            item.items_is_deleted === "0"
+          )
+          .slice(0, 10);
+        setDiscountItems(discountedItems);
+        if (discountedItems.length === 0) {
+          Swal.fire({
+            icon: 'info',
+            title: 'No Discounts Available',
+            text: 'No items with valid discounts found.',
+          });
+        }
+      } else {
+        setDiscountItems([]);
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to Load Discounts',
+          text: 'No discount items available.',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching discount items:', error);
+      setDiscountItems([]);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while fetching discount items.',
+      });
     }
   };
 
@@ -137,7 +215,7 @@ const Home = () => {
     const topSellingUrl = "https://abdulrahmanantar.com/outbye/topselling.php";
     try {
       const data = await fetchWithToken(topSellingUrl);
-      if (data.status === "success" && data.items && Array.isArray(data.items.data)) {
+      if (data.status === "success" && Array.isArray(data.items.data)) {
         setTopSellingItems(data.items.data.slice(0, 10));
       } else {
         setTopSellingItems([]);
@@ -149,6 +227,7 @@ const Home = () => {
       }
     } catch (error) {
       console.error('Error fetching top selling data:', error);
+      setTopSellingItems([]);
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -238,6 +317,7 @@ const Home = () => {
     }
   };
 
+  // Added from old code: Feedback-related functions
   const handleStarClick = (index) => setRating(index + 1);
 
   const submitFeedback = async () => {
@@ -304,6 +384,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchCategories();
+    fetchDiscountItems();
     fetchTopSelling();
     fetchOffers();
 
@@ -563,6 +644,7 @@ const Home = () => {
               <div className="glide__slides">
                 {discountItems.map(item => {
                   const isFavorited = favorites.some(fav => String(fav.favorite_itemsid) === String(item.items_id));
+                  const discountedPrice = parseFloat(item.items_price) - parseFloat(item.items_discount || 0);
                   return (
                     <div className="glide__slide" key={item.items_id}>
                       <div className="card-content">
@@ -580,7 +662,7 @@ const Home = () => {
                         <p className="card-description">{item.items_des || 'No description available.'}</p>
                         <p className="price">
                           <span className="old-price">{item.items_price || '0'} EGP</span>
-                          <span className="new-price">{item.items_discount || '0'} EGP</span>
+                          <span className="new-price">{discountedPrice.toFixed(2)} EGP</span>
                         </p>
                         <div className="card-actions">
                           <button className="addItem-to-cart" onClick={() => handleAddToCart(item.items_id, 'item')}>
@@ -668,6 +750,7 @@ const Home = () => {
         )}
       </section>
 
+      {/* Added from old code: Feedback Section */}
       {userId && (
         <section className="feedback-section">
           <h2 className="section-title">

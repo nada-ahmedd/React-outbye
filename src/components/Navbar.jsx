@@ -324,7 +324,7 @@ const Navbar = () => {
               </button>
             </div>
             {(isLoggedIn || isAdminLoggedIn) && profile && (
-              <div className="user-welcome">
+              <Link to="/profile" className="user-welcome">
                 <img
                   src={profile.users_image || avatarUrl}
                   alt="User Avatar"
@@ -333,7 +333,7 @@ const Navbar = () => {
                 <span id="userName">
                   Welcome, {userName}
                 </span>
-              </div>
+              </Link>
             )}
             {(isLoggedIn || isAdminLoggedIn) && (
               <div className={`dropdown ${isDropdownOpen ? 'show' : ''}`} ref={dropdownRef}>

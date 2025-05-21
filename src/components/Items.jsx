@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux'; // Add useDispatch
+import { fetchCart } from '../store/cartSlice'; // Import fetchCart
 import Swal from 'sweetalert2';
 import '../styles/Items.css';
 
@@ -7,6 +9,7 @@ const Items = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch(); // Initialize dispatch
   const [serviceDetails, setServiceDetails] = useState(null);
   const [items, setItems] = useState([]);
   const [itemsLoading, setItemsLoading] = useState(true);
@@ -139,8 +142,10 @@ const Items = () => {
       });
       if (data.success) {
         Swal.fire("✅ Added!", "Item successfully added to cart.", "success");
+        // Fetch updated cart to update Navbar icon
+        dispatch(fetchCart(userId));
       } else {
-        Swal.fire("❌ Error", data.message, "error");
+        Swal.fire("❌ Error", data.message || "Failed to add item to cart.", "error");
       }
     } catch (error) {
       console.error("❌ Error adding to cart:", error);
