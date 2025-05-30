@@ -12,15 +12,38 @@ const Services = () => {
 
   const fetchWithToken = async (url, options = {}) => {
     const token = localStorage.getItem('token');
-    const excludedAPIs = ["offers.php", "categories.php", "topselling.php", "services.php", "items.php", "search.php"];
+    const userId = localStorage.getItem('userId') || '0'; // Guest = 0
+    console.log("Token used:", token);
+    console.log("User ID used:", userId);
+    const excludedAPIs = ["offers.php", "categories.php", "topselling.php", "services.php", "search.php"];
     const isExcluded = excludedAPIs.some(api => url.includes(api));
     options.headers = {
       ...options.headers,
-      ...(isExcluded ? {} : { 'Authorization': `Bearer ${token}` }),
-      "Content-Type": options.headers?.["Content-Type"] || "application/x-www-form-urlencoded"
+      ...(isExcluded || !token ? {} : { 'Authorization': `Bearer ${token}` }),
+      "Content-Type": "application/x-www-form-urlencoded"
     };
+    console.log("Headers sent:", options.headers);
     const response = await fetch(url, options);
+    if (response.status === 401) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Session Expired',
+        text: 'Please log in again.',
+        confirmButtonText: 'Login',
+      }).then(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('isLoggedIn');
+        navigate('/signin');
+      });
+      throw new Error('Unauthorized');
+    }
+    if (response.status === 403) {
+      console.log("403 Forbidden - Access Denied");
+      throw new Error('Access Denied');
+    }
     const text = await response.text();
+    console.log("Response text:", text);
     let data = { status: "success" };
     try {
       const jsonStart = text.indexOf("{");
@@ -48,7 +71,8 @@ const Services = () => {
     }
 
     setServicesLoading(true);
-    const apiUrl = `https://abdulrahmanantar.com/outbye/services/services.php?id=${id}`;
+    const userId = localStorage.getItem('userId') || '0';
+    const apiUrl = `https://abdulrahmanantar.com/outbye/services/services.php?id=${id}&usersid=${userId}`;
     try {
       const data = await fetchWithToken(apiUrl, { method: "GET" });
       if (data.status === "success" && Array.isArray(data.data) && data.data.length > 0) {
@@ -64,11 +88,13 @@ const Services = () => {
       }
     } catch (error) {
       console.error('Error fetching services:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'An error occurred while fetching services.',
-      });
+      if (error.message !== 'Unauthorized' && error.message !== 'Access Denied') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while fetching services.',
+        });
+      }
       setServices([]);
     } finally {
       setServicesLoading(false);
@@ -77,10 +103,11 @@ const Services = () => {
 
   const fetchServiceItems = async (serviceId) => {
     const apiUrl = "https://abdulrahmanantar.com/outbye/items/items.php";
+    const userId = localStorage.getItem('userId') || '0';
     try {
       const data = await fetchWithToken(apiUrl, {
         method: "POST",
-        body: new URLSearchParams({ id: serviceId }).toString()
+        body: new URLSearchParams({ id: serviceId, usersid: userId }).toString()
       });
       if (data.status === "success" && data.data && data.data.length > 0) {
         navigate(`/items/${serviceId}`, { state: { fromService: true } });
@@ -93,11 +120,19 @@ const Services = () => {
       }
     } catch (error) {
       console.error('Error fetching service items:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'An error occurred while fetching items.',
-      });
+      if (error.message === 'Access Denied') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Access Denied',
+          text: 'You do not have permission to view items. Please log in if required.',
+        });
+      } else if (error.message !== 'Unauthorized') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while fetching items.',
+        });
+      }
     }
   };
 
@@ -131,7 +166,6 @@ const Services = () => {
 
   return (
     <main>
-      {/* Category Header */}
       <div id="category-container">
         {categoryName ? (
           <div className="category-header">
@@ -142,7 +176,6 @@ const Services = () => {
         )}
       </div>
 
-      {/* Services Container */}
       <div id="services-container">
         {servicesLoading ? (
           <div className="spinner-container">

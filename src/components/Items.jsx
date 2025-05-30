@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux'; // Add useDispatch
-import { fetchCart } from '../store/cartSlice'; // Import fetchCart
+import { useDispatch } from 'react-redux';
+import { fetchCart } from '../store/cartSlice';
 import Swal from 'sweetalert2';
 import '../styles/Items.css';
 
@@ -9,13 +9,12 @@ const Items = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch(); // Initialize dispatch
+  const dispatch = useDispatch();
   const [serviceDetails, setServiceDetails] = useState(null);
   const [items, setItems] = useState([]);
   const [itemsLoading, setItemsLoading] = useState(true);
   const [favorites, setFavorites] = useState({});
 
-  // تحققي إذا كان المستخدم جاي من Service
   if (!location.state?.fromService) {
     navigate('/');
     return null;
@@ -23,7 +22,7 @@ const Items = () => {
 
   const fetchWithToken = async (url, options = {}) => {
     const token = localStorage.getItem('token');
-    const excludedAPIs = ["offers.php", "categories.php", "topselling.php", "services.php", "items.php", "search.php"];
+    const excludedAPIs = ["offers.php", "categories.php", "topselling.php", "services.php", "search.php"];
     const isExcluded = excludedAPIs.some(api => url.includes(api));
     options.headers = {
       ...options.headers,
@@ -31,6 +30,20 @@ const Items = () => {
       "Content-Type": options.headers?.["Content-Type"] || "application/x-www-form-urlencoded"
     };
     const response = await fetch(url, options);
+    if (response.status === 401) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Session Expired',
+        text: 'Please log in again.',
+        confirmButtonText: 'Login',
+      }).then(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('isLoggedIn');
+        navigate('/signin');
+      });
+      throw new Error('Unauthorized');
+    }
     const text = await response.text();
     let data = { status: "success" };
     try {
@@ -66,14 +79,23 @@ const Items = () => {
         const service = data.data[0];
         setServiceDetails({
           service_name: service.service_name,
-          service_image: service.service_image,
           service_description: service.service_description,
+          service_image: service.service_image,
           service_location: service.service_location,
           service_rating: service.service_rating,
           service_phone: service.service_phone,
         });
 
-        const filteredItems = data.data.filter(item => item && item.items_id && item.service_id === id);
+        const filteredItems = data.data.filter(item => 
+          item && 
+          item.items_id && 
+          String(item.service_id).trim() === String(id).trim()
+        );
+        
+        if (filteredItems.length === 0) {
+          console.warn("⚠️ No items matched the service ID:", id);
+        }
+        
         setItems(filteredItems);
       } else {
         Swal.fire({
@@ -85,11 +107,13 @@ const Items = () => {
       }
     } catch (error) {
       console.error('Error fetching items:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'An error occurred while fetching items.',
-      });
+      if (error.message !== 'Unauthorized') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while fetching items.',
+        });
+      }
       setItems([]);
     } finally {
       setItemsLoading(false);
@@ -142,14 +166,15 @@ const Items = () => {
       });
       if (data.success) {
         Swal.fire("✅ Added!", "Item successfully added to cart.", "success");
-        // Fetch updated cart to update Navbar icon
         dispatch(fetchCart(userId));
       } else {
         Swal.fire("❌ Error", data.message || "Failed to add item to cart.", "error");
       }
     } catch (error) {
       console.error("❌ Error adding to cart:", error);
-      Swal.fire("❌ Error", "An error occurred while adding the item to the cart.", "error");
+      if (error.message !== 'Unauthorized') {
+        Swal.fire("❌ Error", "An error occurred while adding the item to the cart.", "error");
+      }
     }
   };
 
@@ -190,7 +215,9 @@ const Items = () => {
         }
       } catch (error) {
         console.error("❌ Error adding to favorites:", error);
-        Swal.fire("❌ Error", "An error occurred while adding the item to favorites.", "error");
+        if (error.message !== 'Unauthorized') {
+          Swal.fire("❌ Error", "An error occurred while adding the item to favorites.", "error");
+        }
       }
     } else {
       const favId = favorites[itemId];
@@ -217,7 +244,9 @@ const Items = () => {
         }
       } catch (error) {
         console.error("❌ Error deleting favorite:", error);
-        Swal.fire("❌ Error", "An error occurred while removing the item.", "error");
+        if (error.message !== 'Unauthorized') {
+          Swal.fire("❌ Error", "An error occurred while removing the item.", "error");
+        }
       }
     }
   };
@@ -256,7 +285,6 @@ const Items = () => {
 
   return (
     <main>
-      {/* Service Details */}
       <div id="service-details">
         {serviceDetails ? (
           <div className="service-card">
@@ -279,7 +307,6 @@ const Items = () => {
         )}
       </div>
 
-      {/* Items Container */}
       <div id="items-container">
         {itemsLoading ? (
           <div className="spinner-container">

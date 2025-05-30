@@ -25,7 +25,6 @@ const Home = () => {
   const [activeOfferId, setActiveOfferId] = useState(null);
   const discountRef = useRef(null);
   const topSellingRef = useRef(null);
-  // Added from old code: Feedback-related states
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [serviceType, setServiceType] = useState('');
@@ -76,21 +75,14 @@ const Home = () => {
       const response = await fetch(url, options);
       let text = await response.text();
       console.log('Raw Response:', text);
-      const parts = text.split('}{').map((part, index, array) => {
-        if (index === 0) return part + '}';
-        if (index === array.length - 1) return '{' + part;
-        return '{' + part + '}';
-      });
-      const data = [];
-      for (const part of parts) {
-        try {
-          const parsed = JSON.parse(part);
-          data.push(parsed);
-        } catch (e) {
-          console.error('Error parsing JSON part:', e, 'Part:', part);
-        }
+      const jsonMatch = text.match(/{.*}/s);
+      if (jsonMatch) {
+        text = jsonMatch[0];
+      } else {
+        text = '{}';
       }
-      return data.length > 0 ? data : { status: "error", message: "Invalid JSON response" };
+      const data = JSON.parse(text);
+      return data.status ? data : { status: "success", ...data };
     } catch (error) {
       console.error('Fetch error:', error);
       return { status: "error", message: error.message };
@@ -174,7 +166,14 @@ const Home = () => {
     const apiUrl = "https://abdulrahmanantar.com/outbye/home.php";
     try {
       const data = await fetchWithTokenForDiscount(apiUrl);
-      const itemsData = data.find(obj => obj.items && obj.items.data);
+      let itemsData;
+      if (Array.isArray(data)) {
+        itemsData = data.find(obj => obj.items && obj.items.data);
+      } else if (data.items && data.items.data) {
+        itemsData = data;
+      } else {
+        itemsData = null;
+      }
       if (itemsData && itemsData.items.status === "success" && Array.isArray(itemsData.items.data)) {
         const discountedItems = itemsData.items.data
           .filter(item => 
@@ -317,7 +316,6 @@ const Home = () => {
     }
   };
 
-  // Added from old code: Feedback-related functions
   const handleStarClick = (index) => setRating(index + 1);
 
   const submitFeedback = async () => {
@@ -750,7 +748,6 @@ const Home = () => {
         )}
       </section>
 
-      {/* Added from old code: Feedback Section */}
       {userId && (
         <section className="feedback-section">
           <h2 className="section-title">
