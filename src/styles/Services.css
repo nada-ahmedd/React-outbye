@@ -228,6 +228,69 @@ h3 {
     100% { transform: rotate(360deg); }
 }
 
+/* Skeleton Loading Styles */
+.skeleton {
+  background: #f0f0f0; /* لون الخلفية الرمادي */
+  border-radius: 15px; /* نفس radius الكارد */
+  animation: shimmer 1.5s infinite; /* تأثير التحميل */
+  display: flex;
+  flex-direction: column;
+  width: 400px; /* نفس عرض الكارد */
+  padding: 20px; /* نفس padding الكارد */
+}
+
+/* تأثير الـ shimmer للـ skeleton */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%, /* لون أفتح للتحميل */
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+}
+
+/* تخصيص الـ skeleton للصورة */
+.service-image.skeleton {
+  height: 180px; /* نفس ارتفاع الصورة */
+  width: 100%;
+  border-radius: 15px;
+  margin-bottom: 10px;
+}
+
+/* تخصيص الـ skeleton للعنوان */
+.service-title.skeleton {
+  height: 30px;
+  width: 80%;
+  margin: 10px auto;
+}
+
+/* تخصيص الـ skeleton للوصف */
+.service-description.skeleton {
+  height: 20px;
+  width: 100%;
+  margin: 10px 0;
+}
+
+/* تخصيص الـ skeleton للتفاصيل */
+.service-details .skeleton {
+  height: 20px;
+  width: 60%;
+  margin: 5px 0;
+}
+
+/* تخصيص الـ skeleton للزر */
+.service-actions .skeleton {
+  height: 40px;
+  width: 120px;
+  margin-top: 15px;
+}
+
 /* Responsive Design */
 @media (max-width: 991px) {
     .service-item {
@@ -242,6 +305,11 @@ h3 {
     .category-header h2 {
         margin-top: 80px;
         font-size: 28px;
+    }
+
+    .skeleton {
+        width: 100%;
+        max-width: 350px;
     }
 }
 
@@ -265,5 +333,22 @@ h3 {
 
     .secondary a {
         font-size: 12px;
+    }
+
+    .skeleton {
+        padding: 15px;
+    }
+
+    .service-image.skeleton {
+        height: 150px;
+    }
+
+    .service-title.skeleton {
+        height: 25px;
+    }
+
+    .service-actions .skeleton {
+        height: 35px;
+        width: 100px;
     }
 }

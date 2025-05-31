@@ -22,41 +22,85 @@ const Items = () => {
 
   const fetchWithToken = async (url, options = {}) => {
     const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId') || '0';
     const excludedAPIs = ["offers.php", "categories.php", "topselling.php", "services.php", "search.php"];
-    const isExcluded = excludedAPIs.some(api => url.includes(api));
+    const isGuest = userId === "0";
+    const isItemsAPI = url.includes("items/items.php");
+    const isExcluded = excludedAPIs.some(api => url.includes(api)) || !token || isGuest || isItemsAPI;
+
+    if (token && !isExcluded) {
+      const tokenExpiresAt = localStorage.getItem('tokenExpiresAt');
+      if (tokenExpiresAt && new Date().getTime() > parseInt(tokenExpiresAt)) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Session Expired',
+          text: 'Your session has expired. Please log in again.',
+          confirmButtonText: 'Login',
+        }).then(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('tokenExpiresAt');
+          navigate('/signin');
+        });
+        throw new Error('Token Expired');
+      }
+    }
+
     options.headers = {
       ...options.headers,
       ...(isExcluded ? {} : { 'Authorization': `Bearer ${token}` }),
       "Content-Type": options.headers?.["Content-Type"] || "application/x-www-form-urlencoded"
     };
-    const response = await fetch(url, options);
-    if (response.status === 401) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Session Expired',
-        text: 'Please log in again.',
-        confirmButtonText: 'Login',
-      }).then(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('isLoggedIn');
-        navigate('/signin');
-      });
-      throw new Error('Unauthorized');
+
+    if (isItemsAPI) {
+      console.log("Removing Authorization header for items/items.php...");
+      delete options.headers['Authorization'];
     }
-    const text = await response.text();
-    let data = { status: "success" };
+
+    console.log("Request URL:", url);
+    console.log("Request Options:", options);
     try {
-      const jsonStart = text.indexOf("{");
-      const jsonEnd = text.lastIndexOf("}") + 1;
-      if (jsonStart !== -1 && jsonEnd > 0) {
-        const jsonText = text.substring(jsonStart, jsonEnd);
-        data = JSON.parse(jsonText);
+      const response = await fetch(url, options);
+      console.log("Response Status:", response.status);
+      if (response.status === 401) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Session Expired',
+          text: 'Please log in again.',
+          confirmButtonText: 'Login',
+        }).then(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('tokenExpiresAt');
+          navigate('/signin');
+        });
+        throw new Error('Unauthorized');
       }
-    } catch (e) {
-      console.error('Error parsing JSON:', e);
+      if (response.status === 403) {
+        const errorText = await response.text();
+        console.log("403 Forbidden - Access Denied. Response:", errorText);
+        throw new Error('Access Denied - Check backend response: ' + errorText);
+      }
+      const text = await response.text();
+      console.log("Response text:", text);
+      let data = { status: "success" };
+      try {
+        const jsonStart = text.indexOf("{");
+        const jsonEnd = text.lastIndexOf("}") + 1;
+        if (jsonStart !== -1 && jsonEnd > 0) {
+          const jsonText = text.substring(jsonStart, jsonEnd);
+          data = JSON.parse(jsonText);
+        }
+      } catch (e) {
+        console.error('Error parsing JSON:', e);
+      }
+      return data;
+    } catch (error) {
+      console.error(`Fetch error for ${url}:`, error);
+      throw error;
     }
-    return data;
   };
 
   const isLoggedIn = () => {
@@ -72,9 +116,11 @@ const Items = () => {
     }
 
     setItemsLoading(true);
-    const apiUrl = `https://abdulrahmanantar.com/outbye/items/items.php?id=${id}&t=${new Date().getTime()}`;
+    const userId = localStorage.getItem('userId') || '0';
+    const apiUrl = `https://abdulrahmanantar.com/outbye/items/items.php?id=${id}&usersid=${userId}&t=${new Date().getTime()}`;
     try {
       const data = await fetchWithToken(apiUrl, { method: "POST", cache: "no-cache" });
+      console.log("fetchItems response:", data);
       if (data.status === "success" && Array.isArray(data.data) && data.data.length > 0) {
         const service = data.data[0];
         setServiceDetails({
@@ -101,13 +147,26 @@ const Items = () => {
         Swal.fire({
           icon: 'error',
           title: 'Failed to Load Items',
-          text: 'Unable to fetch items. Please try again later.',
+          text: data.message || 'Unable to fetch items. Please try again later.',
         });
         setItems([]);
       }
     } catch (error) {
       console.error('Error fetching items:', error);
-      if (error.message !== 'Unauthorized') {
+      if (error.message.includes('Access Denied')) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Access Denied',
+          text: 'Unable to fetch items. Please check your login status or try again later.',
+          confirmButtonText: 'Login',
+          showCancelButton: true,
+          cancelButtonText: 'Continue Browsing',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate('/signin');
+          }
+        });
+      } else if (error.message !== 'Unauthorized' && error.message !== 'Token Expired') {
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -172,7 +231,7 @@ const Items = () => {
       }
     } catch (error) {
       console.error("❌ Error adding to cart:", error);
-      if (error.message !== 'Unauthorized') {
+      if (error.message !== 'Unauthorized' && error.message !== 'Token Expired') {
         Swal.fire("❌ Error", "An error occurred while adding the item to the cart.", "error");
       }
     }
@@ -215,7 +274,7 @@ const Items = () => {
         }
       } catch (error) {
         console.error("❌ Error adding to favorites:", error);
-        if (error.message !== 'Unauthorized') {
+        if (error.message !== 'Unauthorized' && error.message !== 'Token Expired') {
           Swal.fire("❌ Error", "An error occurred while adding the item to favorites.", "error");
         }
       }
@@ -244,7 +303,7 @@ const Items = () => {
         }
       } catch (error) {
         console.error("❌ Error deleting favorite:", error);
-        if (error.message !== 'Unauthorized') {
+        if (error.message !== 'Unauthorized' && error.message !== 'Token Expired') {
           Swal.fire("❌ Error", "An error occurred while removing the item.", "error");
         }
       }
@@ -290,27 +349,44 @@ const Items = () => {
           <div className="service-card">
             <div className="service-header">
               <img
-                src={serviceDetails.service_image || '/images/out bye.png'}
+                src={itemsLoading ? '' : serviceDetails.service_image || '/images/out bye.png'}
                 alt={serviceDetails.service_name}
-                className="service-img"
+                className={`service-img ${itemsLoading ? 'skeleton' : ''}`}
                 onError={(e) => (e.target.src = '/images/out bye.png')}
               />
-              <h2>{serviceDetails.service_name}</h2>
+              <h2 className={itemsLoading ? 'skeleton skeleton-text' : ''}>{serviceDetails.service_name}</h2>
             </div>
-            <p>{serviceDetails.service_description}</p>
-            <p><i className="fas fa-map-marker-alt"></i> Location: {serviceDetails.service_location}</p>
-            <p className="rating">⭐ Rating: {serviceDetails.service_rating}</p>
-            <p><i className="fas fa-phone"></i> Phone: <a href={`tel:${serviceDetails.service_phone}`}>{serviceDetails.service_phone}</a></p>
+            <p className={itemsLoading ? 'skeleton skeleton-text' : ''}>{serviceDetails.service_description}</p>
+            <p className={itemsLoading ? 'skeleton skeleton-text' : ''}><i className="fas fa-map-marker-alt"></i> Location: {serviceDetails.service_location}</p>
+            <p className={itemsLoading ? 'skeleton skeleton-text' : 'rating'}>⭐ Rating: {serviceDetails.service_rating}</p>
+            <p className={itemsLoading ? 'skeleton skeleton-text' : ''}><i className="fas fa-phone"></i> Phone: <a href={`tel:${serviceDetails.service_phone}`}>{serviceDetails.service_phone}</a></p>
           </div>
         ) : (
-          <p>Loading service details...</p>
+          <div className="service-card skeleton">
+            <div className="service-header">
+              <div className="skeleton skeleton-image service-img"></div>
+              <div className="skeleton skeleton-text"></div>
+            </div>
+            <div className="skeleton skeleton-text"></div>
+            <div className="skeleton skeleton-text"></div>
+            <div className="skeleton skeleton-text"></div>
+            <div className="skeleton skeleton-text"></div>
+          </div>
         )}
       </div>
 
       <div id="items-container">
         {itemsLoading ? (
-          <div className="spinner-container">
-            <div className="spinner" />
+          <div className="items-skeleton">
+            {[...Array(3)].map((_, index) => (
+              <div className="item skeleton" key={index}>
+                <div className="skeleton skeleton-image item-image"></div>
+                <div className="skeleton skeleton-text"></div>
+                <div className="skeleton skeleton-text"></div>
+                <div className="skeleton skeleton-text"></div>
+                <div className="skeleton skeleton-button"></div>
+              </div>
+            ))}
           </div>
         ) : items.length > 0 ? (
           items.map(item => {

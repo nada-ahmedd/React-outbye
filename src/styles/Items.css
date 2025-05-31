@@ -232,6 +232,51 @@ body {
     border: 2px solid #F26B0A;
 }
 
+/* Skeleton Loading */
+.skeleton {
+    animation: pulse 1.5s infinite ease-in-out;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+}
+
+.skeleton-image {
+    width: 100%;
+    height: 180px;
+    border-radius: 10px;
+}
+
+.service-card .skeleton-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.skeleton-text {
+    width: 80%;
+    height: 16px;
+    margin: 8px auto;
+}
+
+.skeleton-button {
+    width: 120px;
+    height: 40px;
+    margin: 10px auto;
+    border-radius: 20px;
+}
+
+.items-skeleton {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+@keyframes pulse {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
 /* السبينر */
 .spinner-container {
     display: flex;

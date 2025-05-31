@@ -11,6 +11,104 @@ body {
   padding-top: 70px;
 }
 
+/* No Data Placeholder Styles */
+.no-data {
+  width: 100%;
+  text-align: center;
+  padding: 40px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-in-out;
+}
+
+.no-data h3 {
+  font-size: 2rem;
+  color: #F26B0A;
+  margin-bottom: 15px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.no-data p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 20px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.retry-btn {
+  background: #F26B0A;
+  color: #fff;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.retry-btn:hover {
+  background: #e65c00;
+}
+
+.support-text {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.support-text a {
+  color: #F26B0A;
+  text-decoration: none;
+}
+
+.support-text a:hover {
+  text-decoration: underline;
+}
+
+.placeholder-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+}
+
+.placeholder-card {
+  width: 20%;
+  min-width: 200px;
+  text-align: center;
+}
+
+.placeholder-image {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  border-radius: 15px;
+  animation: loading 1.5s infinite;
+}
+
+.placeholder-text {
+  height: 1rem;
+  width: 70%;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  margin: 10px auto;
+  border-radius: 4px;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 /* Special Offers Section */
 .offers-section {
   width: 100%;
@@ -790,6 +888,7 @@ body {
     font-size: 10px;
   }
 }
+
 /* Feedback Section */
 .feedback-section {
   width: 85%;
@@ -797,12 +896,12 @@ body {
   padding: 40px 0;
   position: relative;
   min-height: 200px;
-  background: transparent; /* بدون باكجراوند */
+  background: transparent;
 }
 
 .section-title {
   text-align: center;
-  color: #333; /* لون أسود ناعم */
+  color: #333;
   font-size: 28px;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
@@ -814,7 +913,7 @@ body {
 }
 
 .feedback-icon.star-pulse {
-  color: #F26B0A; /* أزرق ناعم */
+  color: #F26B0A;
   font-size: 24px;
   animation: starPulse 1.5s infinite;
 }
@@ -829,9 +928,9 @@ body {
   max-width: 600px;
   margin: 0 auto;
   padding: 30px;
-  background: #FFFFFF; /* أبيض نقي */
-  border-radius: 20px 40px 20px 40px; /* حدود دائرية غير منتظمة */
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px #F26B0A; /* ظل 3D مع حدود أزرق */
+  background: #FFFFFF;
+  border-radius: 20px 40px 20px 40px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px #F26B0A;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -842,7 +941,7 @@ body {
 }
 
 .feedback-container.review-card:hover {
-  transform: translateY(-5px); /* يرتفع لفوق عند الـ hover */
+  transform: translateY(-5px);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 0 0 2px #F26B0A;
 }
 
@@ -853,13 +952,13 @@ body {
   left: 0;
   width: 100%;
   height: 5px;
-  background: linear-gradient(90deg, #F26B0A, #F26B0A); /* تدرج أزرق */
+  background: linear-gradient(90deg, #F26B0A, #F26B0A);
 }
 
 .feedback-instruction {
   font-family: 'Poppins', sans-serif;
   font-size: 1.2rem;
-  color: #555; /* رمادي ناعم */
+  color: #555;
   font-weight: 500;
   text-align: center;
   margin-bottom: 10px;
@@ -877,16 +976,16 @@ body {
 }
 
 .stars .fa-star {
-  color: #D3D3D3; /* رمادي فاتح للنجوم غير المختارة */
+  color: #D3D3D3;
 }
 
 .stars .fa-star.active {
-  color: #F26B0A; /* أزرق ناعم */
+  color: #F26B0A;
   transform: scale(1.2);
 }
 
 .stars .fa-star:hover {
-  color: #F26B0A; /* أزرق أفتح عند الـ hover */
+  color: #F26B0A;
   transform: scale(1.2);
 }
 
@@ -901,18 +1000,18 @@ body {
 .feedback-textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid #E0E0E0; /* حدود رمادي فاتح */
+  border: 1px solid #E0E0E0;
   border-radius: 8px;
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
   color: #333;
-  background: #F7F7F7; /* رمادي فاتح جدًا */
+  background: #F7F7F7;
   transition: border-color 0.3s ease;
 }
 
 .feedback-input:focus,
 .feedback-textarea:focus {
-  border-color: #F26B0A; /* أزرق ناعم عند الـ focus */
+  border-color: #F26B0A;
   outline: none;
 }
 
@@ -929,7 +1028,7 @@ body {
 
 .add-comment-btn,
 .submit-btn {
-  background: #F26B0A; /* أزرق ناعم */
+  background: #F26B0A;
   color: #FFFFFF;
   padding: 12px 25px;
   border-radius: 8px;
@@ -946,7 +1045,7 @@ body {
 
 .add-comment-btn:hover,
 .submit-btn:hover {
-  background: #F26B0A; /* أزرق أفتح عند الـ hover */
+  background: #F26B0A;
   transform: translateY(-2px);
 }
 

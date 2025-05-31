@@ -143,20 +143,10 @@ const Home = () => {
         setCategories(data.data.filter(category => category.is_deleted === "0"));
       } else {
         setCategories([]);
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed to Load Data',
-          text: 'Unable to load categories.',
-        });
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
       setCategories([]);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'An error occurred while fetching categories.',
-      });
     } finally {
       setLoading(false);
     }
@@ -184,29 +174,12 @@ const Home = () => {
           )
           .slice(0, 10);
         setDiscountItems(discountedItems);
-        if (discountedItems.length === 0) {
-          Swal.fire({
-            icon: 'info',
-            title: 'No Discounts Available',
-            text: 'No items with valid discounts found.',
-          });
-        }
       } else {
         setDiscountItems([]);
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed to Load Discounts',
-          text: 'No discount items available.',
-        });
       }
     } catch (error) {
       console.error('Error fetching discount items:', error);
       setDiscountItems([]);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'An error occurred while fetching discount items.',
-      });
     }
   };
 
@@ -218,20 +191,10 @@ const Home = () => {
         setTopSellingItems(data.items.data.slice(0, 10));
       } else {
         setTopSellingItems([]);
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed to Load Top Selling',
-          text: 'No top selling items available.',
-        });
       }
     } catch (error) {
       console.error('Error fetching top selling data:', error);
       setTopSellingItems([]);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'An error occurred while fetching top selling items.',
-      });
     }
   };
 
@@ -378,6 +341,14 @@ const Home = () => {
     } catch (error) {
       Swal.fire({ icon: 'error', text: 'An error occurred while submitting the review' });
     }
+  };
+
+  const handleRetry = () => {
+    setLoading(true);
+    fetchCategories();
+    fetchDiscountItems();
+    fetchTopSelling();
+    fetchOffers();
   };
 
   useEffect(() => {
@@ -533,7 +504,14 @@ const Home = () => {
         <div className="categories">
           <div className="category-items-wrapper" id="category-items">
             {loading ? (
-              <p>Loading categories...</p>
+              <div className="placeholder-grid">
+                {[...Array(4)].map((_, i) => (
+                  <div className="placeholder-card" key={i}>
+                    <div className="placeholder-image"></div>
+                    <div className="placeholder-text"></div>
+                  </div>
+                ))}
+              </div>
             ) : categories.length > 0 ? (
               categories.map(category => (
                 <div className="category-item" key={category.categories_id}>
@@ -553,13 +531,25 @@ const Home = () => {
                 </div>
               ))
             ) : (
-              <p>No categories available.</p>
+              <div className="no-data-container">
+                <div className="no-data-card">
+                  <i className="fas fa-exclamation-circle no-data-icon"></i>
+                  <h3 className="no-data-title">No Categories Available</h3>
+                  <p className="no-data-message">It seems we couldn't load the categories. Please check your connection or try again.</p>
+                  <button className="retry-btn" onClick={handleRetry}>
+                    <i className="fas fa-redo"></i> Retry
+                  </button>
+                  <p className="support-text">
+                    Need assistance? <Link to="/contact" className="contact-link">Contact Us</Link>
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      {offers.length > 0 && (
+      {offers.length > 0 ? (
         <section className="offers-section">
           <h2 className="section-title">Special Offers</h2>
           <div className="offers-carousel">
@@ -600,17 +590,10 @@ const Home = () => {
               </div>
             ))}
             {offers.length > 4 && (
-              <div
-                className={`offers-carousel-item`}
-                key="out-buy-card"
-              >
+              <div className="offers-carousel-item" key="out-buy-card">
                 <div className="offer-card">
                   <div className="offer-image-wrapper">
-                    <img
-                      src="images/out bye.png"
-                      alt="Out Buy"
-                      loading="lazy"
-                    />
+                    <img src="images/out bye.png" alt="Out Buy" loading="lazy" />
                   </div>
                   <div className="offer-details out-buy-details">
                     <h3>More Offers Available!</h3>
@@ -624,11 +607,25 @@ const Home = () => {
             )}
             <div className="offer-card-dots">
               {[...Array(Math.min(offers.length, 4) + (offers.length > 4 ? 1 : 0))].map((_, index) => (
-                <span
-                  key={index}
-                  className={`offer-card-dot ${index === 0 ? 'active' : ''}`}
-                ></span>
+                <span key={index} className={`offer-card-dot ${index === 0 ? 'active' : ''}`}></span>
               ))}
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className="offers-section">
+          <h2 className="section-title">Special Offers</h2>
+          <div className="no-data-container">
+            <div className="no-data-card">
+              <i className="fas fa-exclamation-circle no-data-icon"></i>
+              <h3 className="no-data-title">No Offers Available</h3>
+              <p className="no-data-message">Looks like we hit a snag. Please retry or check your connection.</p>
+              <button className="retry-btn" onClick={handleRetry}>
+                <i className="fas fa-redo"></i> Retry
+              </button>
+              <p className="support-text">
+                Need assistance? <Link to="/contact" className="contact-link">Contact Us</Link>
+              </p>
             </div>
           </div>
         </section>
@@ -685,7 +682,19 @@ const Home = () => {
             </div>
           </div>
         ) : (
-          <p>No discounted items available.</p>
+          <div className="no-data-container">
+            <div className="no-data-card">
+              <i className="fas fa-exclamation-circle no-data-icon"></i>
+              <h3 className="no-data-title">No Discounts Available</h3>
+              <p className="no-data-message">Seems like we hit a snag. Try refreshing or check your connection.</p>
+              <button className="retry-btn" onClick={handleRetry}>
+                <i className="fas fa-redo"></i> Retry
+              </button>
+              <p className="support-text">
+                Need assistance? <Link to="/contact" className="contact-link">Contact Us</Link>
+              </p>
+            </div>
+          </div>
         )}
       </section>
 
@@ -744,7 +753,19 @@ const Home = () => {
             </div>
           </div>
         ) : (
-          <p>No top selling items available.</p>
+          <div className="no-data-container">
+            <div className="no-data-card">
+              <i className="fas fa-exclamation-circle no-data-icon"></i>
+              <h3 className="no-data-title">No Top Selling Items</h3>
+              <p className="no-data-message">Could be a connection issue or server glitch. Retry soon!</p>
+              <button className="retry-btn" onClick={handleRetry}>
+                <i className="fas fa-redo"></i> Retry
+              </button>
+              <p className="support-text">
+                Need assistance? <Link to="/contact" className="contact-link">Contact Us</Link>
+              </p>
+            </div>
+          </div>
         )}
       </section>
 

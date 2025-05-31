@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import Skeleton from 'react-loading-skeleton'; // استيراد مكتبة Skeleton
+import 'react-loading-skeleton/dist/skeleton.css'; // استيراد الـ CSS بتاع المكتبة
 import '../styles/Services.css';
 
 const Services = () => {
@@ -12,50 +14,90 @@ const Services = () => {
 
   const fetchWithToken = async (url, options = {}) => {
     const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId') || '0'; // Guest = 0
-    console.log("Token used:", token);
-    console.log("User ID used:", userId);
+    const userId = localStorage.getItem('userId') || '0';
+    console.log("FetchWithToken - Token used:", token);
+    console.log("FetchWithToken - User ID used:", userId);
     const excludedAPIs = ["offers.php", "categories.php", "topselling.php", "services.php", "search.php"];
-    const isExcluded = excludedAPIs.some(api => url.includes(api));
+    const isGuest = userId === "0";
+    const isItemsAPI = url.includes("items/items.php");
+    const isExcluded = excludedAPIs.some(api => url.includes(api)) || !token || isGuest || isItemsAPI;
+
+    if (token && !isExcluded) {
+      const tokenExpiresAt = localStorage.getItem('tokenExpiresAt');
+      if (tokenExpiresAt && new Date().getTime() > parseInt(tokenExpiresAt)) {
+        console.warn('Token expired, logging out...');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Session Expired',
+          text: 'Your session has expired. Please log in again.',
+          confirmButtonText: 'Login',
+        }).then(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('tokenExpiresAt');
+          navigate('/signin');
+        });
+        throw new Error('Token Expired');
+      }
+    }
+
     options.headers = {
       ...options.headers,
-      ...(isExcluded || !token ? {} : { 'Authorization': `Bearer ${token}` }),
+      ...(isExcluded ? {} : { 'Authorization': `Bearer ${token}` }),
       "Content-Type": "application/x-www-form-urlencoded"
     };
-    console.log("Headers sent:", options.headers);
-    const response = await fetch(url, options);
-    if (response.status === 401) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Session Expired',
-        text: 'Please log in again.',
-        confirmButtonText: 'Login',
-      }).then(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('isLoggedIn');
-        navigate('/signin');
-      });
-      throw new Error('Unauthorized');
+
+    if (isItemsAPI) {
+      console.log("FetchWithToken - Forcing removal of Authorization header for items/items.php...");
+      delete options.headers['Authorization'];
     }
-    if (response.status === 403) {
-      console.log("403 Forbidden - Access Denied");
-      throw new Error('Access Denied');
-    }
-    const text = await response.text();
-    console.log("Response text:", text);
-    let data = { status: "success" };
+
+    console.log("FetchWithToken - Request URL:", url);
+    console.log("FetchWithToken - Request Options:", JSON.stringify(options, null, 2));
     try {
-      const jsonStart = text.indexOf("{");
-      const jsonEnd = text.lastIndexOf("}") + 1;
-      if (jsonStart !== -1 && jsonEnd > 0) {
-        const jsonText = text.substring(jsonStart, jsonEnd);
-        data = JSON.parse(jsonText);
+      const response = await fetch(url, options);
+      console.log("FetchWithToken - Response Status:", response.status);
+      console.log("FetchWithToken - Response Headers:", JSON.stringify([...response.headers], null, 2));
+      if (response.status === 401) {
+        console.log("FetchWithToken - 401 Unauthorized - Session Expired");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Session Expired',
+          text: 'Please log in again.',
+          confirmButtonText: 'Login',
+        }).then(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('tokenExpiresAt');
+          navigate('/signin');
+        });
+        throw new Error('Unauthorized');
       }
-    } catch (e) {
-      console.error('Error parsing JSON:', e);
+      if (response.status === 403) {
+        const errorText = await response.text();
+        console.log("FetchWithToken - 403 Forbidden - Access Denied. Response:", errorText);
+        throw new Error('Access Denied - Check backend response: ' + errorText);
+      }
+      const text = await response.text();
+      console.log("FetchWithToken - Response text:", text);
+      let data = { status: "success" };
+      try {
+        const jsonStart = text.indexOf("{");
+        const jsonEnd = text.lastIndexOf("}") + 1;
+        if (jsonStart !== -1 && jsonEnd > 0) {
+          const jsonText = text.substring(jsonStart, jsonEnd);
+          data = JSON.parse(jsonText);
+        }
+      } catch (e) {
+        console.error('FetchWithToken - Error parsing JSON:', e);
+      }
+      return data;
+    } catch (error) {
+      console.error(`FetchWithToken - Fetch error for ${url}:`, error);
+      throw error;
     }
-    return data;
   };
 
   const fetchServices = async () => {
@@ -87,8 +129,8 @@ const Services = () => {
         setServices([]);
       }
     } catch (error) {
-      console.error('Error fetching services:', error);
-      if (error.message !== 'Unauthorized' && error.message !== 'Access Denied') {
+      console.error('fetchServices - Error fetching services:', error);
+      if (error.message !== 'Unauthorized' && error.message !== 'Access Denied' && error.message !== 'Token Expired') {
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -104,29 +146,46 @@ const Services = () => {
   const fetchServiceItems = async (serviceId) => {
     const apiUrl = "https://abdulrahmanantar.com/outbye/items/items.php";
     const userId = localStorage.getItem('userId') || '0';
+    console.log("fetchServiceItems - Service ID:", serviceId);
+    console.log("fetchServiceItems - User ID:", userId);
     try {
       const data = await fetchWithToken(apiUrl, {
         method: "POST",
         body: new URLSearchParams({ id: serviceId, usersid: userId }).toString()
       });
+      console.log("fetchServiceItems - Response data:", data);
       if (data.status === "success" && data.data && data.data.length > 0) {
         navigate(`/items/${serviceId}`, { state: { fromService: true } });
       } else {
         Swal.fire({
           icon: 'info',
           title: 'No Items',
-          text: 'No items found for this service.',
+          text: data.message || 'No items found for this service.',
         });
       }
     } catch (error) {
-      console.error('Error fetching service items:', error);
-      if (error.message === 'Access Denied') {
+      console.error('fetchServiceItems - Error fetching service items:', error);
+      if (error.message.includes('Unauthorized')) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Login Required',
+          text: 'Please log in to view items.',
+          confirmButtonText: 'Login',
+          showCancelButton: true,
+          cancelButtonText: 'Continue Browsing',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate('/signin');
+          }
+        });
+      } else if (error.message.includes('Access Denied')) {
         Swal.fire({
           icon: 'error',
           title: 'Access Denied',
-          text: 'You do not have permission to view items. Please log in if required.',
+          text: 'Unable to fetch items. Please try again later.',
+          confirmButtonText: 'OK',
         });
-      } else if (error.message !== 'Unauthorized') {
+      } else if (error.message !== 'Token Expired') {
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -164,6 +223,28 @@ const Services = () => {
     };
   }, [services]);
 
+  // دالة لعرض الـ Skeleton أثناء التحميل
+  const renderSkeleton = () => {
+    return (
+      <div className="service-item">
+        <Skeleton height={200} width="100%" className="service-image" />
+        <div className="service-content">
+          <Skeleton height={30} width="80%" className="service-title" />
+          <Skeleton height={20} width="100%" count={2} className="service-description" />
+          <div className="service-details">
+            <Skeleton height={20} width="60%" />
+            <Skeleton height={20} width="40%" />
+            <Skeleton height={20} width="60%" />
+            <Skeleton height={20} width="80%" />
+          </div>
+          <div className="service-actions">
+            <Skeleton height={40} width={120} />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <main>
       <div id="category-container">
@@ -172,15 +253,18 @@ const Services = () => {
             <h2>{categoryName}</h2>
           </div>
         ) : (
-          <p>Loading category...</p>
+          <Skeleton height={40} width={200} />
         )}
       </div>
 
       <div id="services-container">
         {servicesLoading ? (
-          <div className="spinner-container">
-            <div className="spinner" />
-          </div>
+          // عرض 3 كاردات Skeleton أثناء التحميل
+          Array(3).fill().map((_, index) => (
+            <div key={index}>
+              {renderSkeleton()}
+            </div>
+          ))
         ) : services.length > 0 ? (
           services.map(service => (
             <div
@@ -192,7 +276,7 @@ const Services = () => {
                 data-src={service.service_image}
                 alt={service.service_name}
                 className="service-image"
-                onError={(e) => (e.target.src = 'images/out bye.png')}
+                onError={(e) => (e.target.src = '/images/out bye.png')}
               />
               <div className="service-content">
                 <h3 className="service-title">{service.service_name}</h3>
@@ -207,7 +291,7 @@ const Services = () => {
                   <p className="secondary">
                     <strong>Website:</strong> 
                     <a href={service.service_website} target="_blank" rel="noopener noreferrer">
-                      {service.service_website}
+                      {service.service_name} {/* بدل الـ URL، استخدمنا service_name */}
                     </a>
                   </p>
                 </div>
