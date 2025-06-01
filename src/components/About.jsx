@@ -3,15 +3,22 @@ import '../styles/About.css';
 
 const About = () => {
   return (
-    <main className="about-page"> {/* إضافة كلاس للتحكم في الإستايلات */}
+    <main className="about-page">
       <section className="our-story">
         <div className="container">
           <div className="text-content">
             <h2>Our Story</h2>
+          <p>
+              Outbye started as a visionary idea to create a platform that helps people discover restaurants, cafes, and hotels tailored to their preferences. We embarked on this journey with a clear goal: to simplify the process of finding the perfect place, whether for a casual meal, a cozy coffee, or a comfortable stay.
+            </p>
             <p>
-              Launched in 2025, Outbye is a platform designed to provide tailored recommendations for restaurants,
-              cafes, and hotels based on customer preferences. Our mission is to make it easier for people to
-              discover the best places that meet their needs.
+              As a team of dedicated developers, we poured our hearts into researching and building a system that could deliver personalized recommendations and location-based services. The road to development was filled with challenges—from designing an intuitive user experience to ensuring the platform could handle diverse user needs. But every obstacle became an opportunity to learn and grow.
+            </p>
+            <p>
+              Our progress is a testament to the power of research and collaboration. Through countless hours of hard work, we refined Outbye’s features, drawing on insights from extensive studies and feedback. We were fortunate to have the guidance of experienced professors and supervising engineers, whose expertise helped shape the platform into what it is today.
+            </p>
+            <p>
+              Outbye is still in the making, but we’re driven by a shared passion to bring this vision to life. We’re committed to creating a tool that not only serves users but also supports local businesses in reaching their audience. This journey of development has been one of growth and discovery, and we’re excited for what’s to come.
             </p>
           </div>
           <div className="image-content">
@@ -56,6 +63,26 @@ const About = () => {
               <i className="fab fa-linkedin"></i>
             </div>
           </div>
+           <div className="team-member">
+            <img src="images/menna.jpg" alt="Mennatallah Hassani" />
+            <h3>Mennatallah Hassani</h3>
+            <p>Flutter Developer</p>
+            <div className="social-icons">
+              <i className="fab fa-twitter"></i>
+              <i className="fab fa-instagram"></i>
+              <i className="fab fa-linkedin"></i>
+            </div>
+          </div>
+          <div className="team-member">
+            <img src="images/shahd.jpg" alt="Shahd Adel" />
+            <h3>Shahd Adel</h3>
+            <p>Flutter Developer</p>
+            <div className="social-icons">
+              <i className="fab fa-twitter"></i>
+              <i className="fab fa-instagram"></i>
+              <i className="fab fa-linkedin"></i>
+            </div>
+          </div>
           <div className="team-member">
             <img src="images/abdelrahman.jpg" alt="Abdelrahman Ahmed" />
             <h3>Abdelrahman Ahmed</h3>
@@ -66,6 +93,18 @@ const About = () => {
               <i className="fab fa-linkedin"></i>
             </div>
           </div>
+          <div className="team-member">
+            <img src="images/hossam.jpg" alt="Hossam Mustafa El-Sayed" />
+            <h3>Hossam Mustafa El-Sayed</h3>
+            <p>Back-end Developer</p>
+            <div className="social-icons">
+              <i className="fab fa-twitter"></i>
+              <i className="fab fa-instagram"></i>
+              <i className="fab fa-linkedin"></i>
+            </div>
+          </div>
+         
+          
         </div>
       </section>
 

@@ -6,11 +6,10 @@ import '../styles/VerifyCode.css';
 const VerifySignUp = () => {
   const navigate = useNavigate();
   const [code, setCode] = useState(['', '', '', '', '']);
-  const [resendTimer, setResendTimer] = useState(30);
-  const [canResend, setCanResend] = useState(false);
-  const [lastResendTime, setLastResendTime] = useState(Date.now());
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isVerified, setIsVerified] = useState(false); // Added to track verification status
+  const [resendTimer, setResendTimer] = useState(0); // Start at 0 since no resend has happened yet
+  const [canResend, setCanResend] = useState(true); // Allow resend initially
+  const [lastResendTime, setLastResendTime] = useState(0);
+  const [isVerified, setIsVerified] = useState(false);
 
   const email = localStorage.getItem('signupEmail');
   const RESEND_COOLDOWN = 30;
@@ -65,7 +64,6 @@ const VerifySignUp = () => {
   const checkEmail = useCallback(() => {
     console.log('Checking email:', email);
     if (!email) {
-      // Only show "No Email Found" if the user hasn't verified yet
       if (!isVerified) {
         Swal.fire({ icon: 'error', title: 'No Email Found', text: 'Please sign up again.' });
         setTimeout(() => navigate('/signup'), 2000);
@@ -77,6 +75,12 @@ const VerifySignUp = () => {
 
   const resendCode = useCallback(async () => {
     if (!checkEmail()) return;
+
+    const currentTime = Date.now();
+    if (currentTime - lastResendTime < RESEND_COOLDOWN * 1000) {
+      Swal.fire({ icon: 'warning', title: 'Wait', text: `Please wait ${Math.ceil((RESEND_COOLDOWN * 1000 - (currentTime - lastResendTime)) / 1000)} seconds before resending.` });
+      return;
+    }
 
     const data = await fetchWithToken('https://abdulrahmanantar.com/outbye/auth/resend.php', {
       method: 'POST',
@@ -90,10 +94,21 @@ const VerifySignUp = () => {
       setLastResendTime(Date.now());
       setResendTimer(RESEND_COOLDOWN);
       setCanResend(false);
+      // Start the timer immediately after a successful resend
+      const interval = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } else {
       Swal.fire({ icon: 'error', title: 'Resend Failed', text: data.message || 'Failed to resend the code.' });
     }
-  }, [checkEmail, fetchWithToken, email]);
+  }, [checkEmail, fetchWithToken, email, lastResendTime]);
 
   const verifyCode = useCallback(async () => {
     const enteredCode = code.join('');
@@ -115,7 +130,7 @@ const VerifySignUp = () => {
     if (data === null) return;
 
     if (data.status === 'success') {
-      setIsVerified(true); // Set verified status to true
+      setIsVerified(true);
       localStorage.removeItem('signupEmail');
       Swal.fire({
         icon: 'success',
@@ -134,48 +149,6 @@ const VerifySignUp = () => {
       });
     }
   }, [code, checkEmail, fetchWithToken, email, navigate]);
-
-  const startResendTimer = useCallback(() => {
-    console.log('Starting timer with resendTimer:', resendTimer);
-    const interval = setInterval(() => {
-      setResendTimer((prev) => {
-        console.log('Current resendTimer:', prev);
-        if (prev <= 1) {
-          clearInterval(interval);
-          setCanResend(true);
-          console.log('Timer finished, canResend set to true');
-          return 0;
-        }
-        const newTimer = prev - 1;
-        console.log('New resendTimer:', newTimer);
-        return newTimer;
-      });
-    }, 1000);
-
-    return () => {
-      console.log('Cleaning up timer interval');
-      clearInterval(interval);
-    };
-  }, [resendTimer]);
-
-  useEffect(() => {
-    // Only proceed if not verified yet
-    if (isVerified) return;
-
-    if (!checkEmail()) return;
-
-    // Only send the initial resend code once
-    if (isInitialLoad) {
-      resendCode();
-      setIsInitialLoad(false);
-    }
-
-    const cleanupTimer = startResendTimer();
-
-    return () => {
-      cleanupTimer();
-    };
-  }, [isInitialLoad, resendCode, startResendTimer, checkEmail, isVerified]); // Removed unnecessary dependencies
 
   const handleInputChange = (index, value) => {
     if (value.length > 1) return;
@@ -237,7 +210,6 @@ const VerifySignUp = () => {
               return;
             }
             resendCode();
-            startResendTimer();
           }}
         >
           Resend Code

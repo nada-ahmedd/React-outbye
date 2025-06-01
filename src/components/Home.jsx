@@ -213,11 +213,11 @@ const Home = () => {
     if (!userId) {
       Swal.fire({
         icon: "warning",
-        title: "⚠️ Error",
-        text: "Please log in first to add the item to the cart.",
-        confirmButtonText: "Log In",
+        title: "⚠️ Login Required",
+        text: "You need to log in to add this item to your cart.",
         showCancelButton: true,
-        cancelButtonText: "Cancel"
+        confirmButtonText: "Log In",
+        cancelButtonText: "Continue Browsing",
       }).then((result) => {
         if (result.isConfirmed) navigate('/signin');
       });
@@ -249,11 +249,11 @@ const Home = () => {
     if (!userId) {
       Swal.fire({
         icon: "warning",
-        title: "⚠️ Error",
-        text: "Please log in first to add items to favorites.",
-        confirmButtonText: "Log In",
+        title: "⚠️ Login Required",
+        text: "You need to log in to add items to your favorites.",
         showCancelButton: true,
-        cancelButtonText: "Cancel"
+        confirmButtonText: "Log In",
+        cancelButtonText: "Continue Browsing",
       }).then((result) => {
         if (result.isConfirmed) navigate('/signin');
       });

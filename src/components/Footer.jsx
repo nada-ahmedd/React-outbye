@@ -27,20 +27,7 @@ const Footer = () => {
             <div className="footer-logo">
               <img src="/images/out bye.png" alt="Logo" className="footer-logo-img" />
               <p>Your go-to place for restaurants, cafes, tourist-places and hotels.</p>
-              <div className="footer-socials">
-                <a href="#" className="social-icon me-3">
-                  <i className="fab fa-facebook"></i>
-                </a>
-                <a href="#" className="social-icon me-3">
-                  <i className="fab fa-twitter"></i>
-                </a>
-                <a href="#" className="social-icon me-3">
-                  <i className="fab fa-instagram"></i>
-                </a>
-                <a href="#" className="social-icon">
-                  <i className="fab fa-linkedin"></i>
-                </a>
-              </div>
+            
             </div>
           </div>
           <div className="col-lg-2 col-md-6 mb-4">
