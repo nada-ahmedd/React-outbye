@@ -130,6 +130,7 @@ const Items = () => {
           service_location: service.service_location,
           service_rating: service.service_rating,
           service_phone: service.service_phone,
+          service_type: service.service_type, // إضافة service_type من البيانات
         });
 
         const filteredItems = data.data.filter(item => 
@@ -395,6 +396,10 @@ const Items = () => {
             const discountedPrice = price - (price * discount / 100);
             const isFavorited = !!favorites[item.items_id];
 
+            // شرط لتحديد إذا كانت الخدمة أوتيل أو مكان سياحي بناءً على service_type
+            const isHotelOrTour = serviceDetails?.service_type?.toLowerCase() === 'hotel' ||
+                                 serviceDetails?.service_type?.toLowerCase() === 'tourist_place';
+
             return (
               <div className="item" key={item.items_id}>
                 <h3>{item.items_name}</h3>
@@ -417,9 +422,11 @@ const Items = () => {
                   onError={(e) => (e.target.src = '/images/out bye.png')}
                 />
                 <div className="item-actions">
-                  <button className="addItem-to-cart" onClick={() => addToCart(item.items_id)}>
-                    Add to Cart
-                  </button>
+                  {!isHotelOrTour && ( // إخفاء زرار Add to Cart لو الخدمة أوتيل أو مكان سياحي
+                    <button className="addItem-to-cart" onClick={() => addToCart(item.items_id)}>
+                      Add to Cart
+                    </button>
+                  )}
                   <button className="favorite-btn" onClick={() => toggleFavorite(item.items_id)}>
                     <i className={`fa-heart ${isFavorited ? 'fa-solid' : 'fa-regular'}`} style={{ color: isFavorited ? '#F26B0A' : '#333' }}></i>
                   </button>
