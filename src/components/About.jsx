@@ -63,26 +63,8 @@ const About = () => {
               <i className="fab fa-linkedin"></i>
             </div>
           </div>
-           <div className="team-member">
-            <img src="images/menna.jpg" alt="Mennatallah Hassani" />
-            <h3>Mennatallah Hassani</h3>
-            <p>Flutter Developer</p>
-            <div className="social-icons">
-              <i className="fab fa-twitter"></i>
-              <i className="fab fa-instagram"></i>
-              <i className="fab fa-linkedin"></i>
-            </div>
-          </div>
-          <div className="team-member">
-            <img src="images/shahd.jpg" alt="Shahd Adel" />
-            <h3>Shahd Adel</h3>
-            <p>Flutter Developer</p>
-            <div className="social-icons">
-              <i className="fab fa-twitter"></i>
-              <i className="fab fa-instagram"></i>
-              <i className="fab fa-linkedin"></i>
-            </div>
-          </div>
+          
+         
           <div className="team-member">
             <img src="images/abdelrahman.jpg" alt="Abdelrahman Ahmed" />
             <h3>Abdelrahman Ahmed</h3>
@@ -93,16 +75,7 @@ const About = () => {
               <i className="fab fa-linkedin"></i>
             </div>
           </div>
-          <div className="team-member">
-            <img src="images/hossam.jpg" alt="Hossam Mustafa El-Sayed" />
-            <h3>Hossam Mustafa El-Sayed</h3>
-            <p>Back-end Developer</p>
-            <div className="social-icons">
-              <i className="fab fa-twitter"></i>
-              <i className="fab fa-instagram"></i>
-              <i className="fab fa-linkedin"></i>
-            </div>
-          </div>
+         
          
           
         </div>
